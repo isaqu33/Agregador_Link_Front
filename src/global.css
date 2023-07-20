@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+
+    @apply bg-violet-900
+}
+
+/* Works on Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: blue orange;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 1px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #4c1d95;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #cc9dec;
+    border-radius: 20px;
+    border: 4px solid #cc9dec;
+}
