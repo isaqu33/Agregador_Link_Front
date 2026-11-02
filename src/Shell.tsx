@@ -1,14 +1,10 @@
 //className='w-full bg-black h-[100%] min-h-[950px]'
 
 import { useEffect, useState } from "react";
-import {
-  Link,
-  Navigate,
-  Outlet,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import img from "./assets/pixeltruewebdesign.png";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
+const img = "/assets/pixeltruewebdesign.png";
 
 import {
   Eye,
@@ -19,26 +15,20 @@ import {
   SquaresFour,
 } from "phosphor-react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  error_Altentication,
-  sucess_Altentication,
-  userAltentication,
-} from "./redux/sliceAltentication";
 import LogoApp from "./componentes/logoApp";
 import { request_User, sucess_User, userMe } from "./redux/user/sliceUser";
 import useApi from "./server/api";
 
 import { useQuery } from "react-query";
-import { ChakraProvider } from "@chakra-ui/react";
-import Preview from "./pages/Preview";
+import Preview from "./views/Preview";
 import screenSize from "../src/hooks/screenSize";
 import AppState from "./AppState";
 import { observer } from "mobx-react";
 
-const App = observer(() => {
+const Shell = observer(({ children }: { children: React.ReactNode }) => {
   const { getMe } = useApi();
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const dadosuser = useSelector(userMe);
 
@@ -53,14 +43,8 @@ const App = observer(() => {
 
     onSuccess: (data) => dispath(sucess_User(data.data)),
 
-    onError: (error) =>
-      dispath(
-        error_Altentication({
-          accessToken: "",
-          uid: "",
-          isLogged: false,
-        })
-      ),
+    // an expired or invalid session sends the user back to the login
+    onError: () => signOut({ callbackUrl: "/login" }),
   });
 
   const NavLink = [
@@ -90,7 +74,7 @@ const App = observer(() => {
     if (url.indexOf("costumer/appearance") != -1) {
       // setcolorbg("Appearance");
 
-      navigate("/costumer", { replace: true });
+      router.replace("/costumer");
     }
     if (url.indexOf("/costumer") != -1) {
       setcolorbg("Links");
@@ -99,7 +83,7 @@ const App = observer(() => {
   }, []);
 
   return (
-    <ChakraProvider disableGlobalStyle={true}>
+    <>
       <div className="w-full flex justify-around p-1 ">
         <div className="w-full  text-zinc-100 flex flex-col items-center pt-[20px] select-none  min-h-[100vh] scrollbar scrollbar-thumb-gray-900 scrollbar-track-gray-100">
           <div className="w-full flex justify-center items-center flex-col  max-w-[1000px] mb-[10px]">
@@ -114,7 +98,7 @@ const App = observer(() => {
                         setprevio(false);
                       } else setprevio(true);
                     }}
-                    to={previo ? "/costumer" : "/costumer/preview"}
+                    href={previo ? "/costumer" : "/costumer/preview"}
                     replace
                     className=" flex  items-center justify-between bg-[#796292] p-1 rounded-lg "
                   >
@@ -142,7 +126,7 @@ const App = observer(() => {
                         colorbg == item.Nome ? "#cc9dec" : "rgb(76 29 149)"
                       }`,
                     }}
-                    to={item.rota}
+                    href={item.rota}
                     onClick={() => {
                       setcolorbg(item.Nome);
                     }}
@@ -157,15 +141,8 @@ const App = observer(() => {
 
               <span
                 onClick={() => {
-                  dispath(
-                    error_Altentication({
-                      accessToken: "",
-                      uid: "",
-                      isLogged: false,
-                    })
-                  );
                   dispath(sucess_User(""));
-                  <Navigate to="/login" replace />;
+                  signOut({ callbackUrl: "/login" });
                 }}
                 className=" bg-red-700 p-1 rounded-lg flex justify-center items-center"
               >
@@ -177,14 +154,14 @@ const App = observer(() => {
           {/* bg-zinc-200 */}
 
           <div className="w-full bg-zinc-200  max-w-[900px] rounded-[20px] p-2 min-h-[400px]">
-            <Outlet />
+            {children}
           </div>
         </div>
 
         {tamanhoTela >= 918 ? (
           <div className="w-[600px] h-full min-h-[840px] flex flex-col justify-center items-center ">
             <a
-              href={`http://localhost:3001/${data?.data.id}`}
+              href={`/${data?.data.id}`}
               target="_blank"
               className="w-[25%] rounded-xl mb-5 bg-[#FF8066] h-full flex justify-center items-center "
             >
@@ -192,7 +169,7 @@ const App = observer(() => {
             </a>
             <div className="w-[65%] min-h-[530px] bg-slate-700 border-solid border-[14px] rounded-[45px] border-[#000000] overflow-hidden  ">
               <div
-                // src="http://localhost:3001/preview"
+                // src="http://localhost:3071/preview"
                 className="w-full h-[550px] overflow-y-scroll "
               >
                 <Preview dados={data?.data}></Preview>
@@ -221,8 +198,8 @@ const App = observer(() => {
         ></iframe>
       </div> */}
       </div>
-    </ChakraProvider>
+    </>
   );
 });
 
-export default App;
+export default Shell;

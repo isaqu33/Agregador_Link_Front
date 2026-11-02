@@ -1,109 +1,53 @@
-import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import {
-  request_Altentication,
-  sucess_Altentication,
-  userAltentication,
-} from "../redux/sliceAltentication";
-import { FacebookLogo } from "phosphor-react";
-
-import imgGoogle from "../assets/google.png";
-import imgFacebook from "../assets/3d-fluency-facebook-logo.png";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import LogoApp from "../componentes/logoApp";
 import screenSize from "../hooks/screenSize";
-import { logarGoogle, logarFacebook } from "../server/firebase";
-import { useMutation, useQuery } from "react-query";
 import useApi from "../server/api";
 
 export default function Login() {
-
-  const dispath = useDispatch()
-
-  
-  const [uidFromFirebase, setUidFromFirebase] = useState<any>();
-
-  console.log(uidFromFirebase)
-
-  const { loginInOurApi } = useApi();
-
-  interface typeDataOnsuccess {
-    accessToken?: string;
-    
-  }
-  
-
-  const { mutate: mutateSignin } = useMutation(
-    (uid: string) => loginInOurApi(uid),
-    {
-      onSuccess: (data: typeDataOnsuccess, variables: string) => {
-       
-        
-        dispath(
-          sucess_Altentication({
-            accessToken: data as string,
-            uid:  variables,
-            isLogged:true
-          })
-        )
-
-        console.log('deu certoo')
-      },
-      onError: (err) => console.log(err),
-    }
-
-  )
-
-  async function handleSignin(service: "google" | "facebook") {
-    let uid: any = "";
-
-    switch (service) {
-      case "google":
-        uid = await logarGoogle();
-        
-        setUidFromFirebase(uid)
-        console.log("entrou no google");
-        break;
-      case "facebook":
-        uid = await logarFacebook();
-        setUidFromFirebase(await logarFacebook())
-        break;
-
-      default:
-        console.log("passou direto");
-        break;
-    }
-
-
-    console.log('passou aqui')
-
-    console.log(uid)
-
-    
-    setUidFromFirebase(uid.uid as string)
-    mutateSignin(uid.uid as string)
-
-
-
-  }
-
-
-  
-
+  const router = useRouter();
   const tamanhoTela = screenSize();
+  const { registerUser } = useApi();
 
-  //aqui estamos pegando os dados do storage do redux para verificar se estamos logados
-  const dataAltentication = useSelector(userAltentication);
-  //aqui estamos pegando o hook do react router dom para redirecionar para "/costumer"
-  const navigate = useNavigate();
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    dataAltentication.data.isLogged ? navigate("/costumer") : null;
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    console.log(dataAltentication.data.isLogged)
-  }, [dataAltentication.data.isLogged]);
+    try {
+      if (mode === "register") {
+        await registerUser({ name, email, password });
+      }
 
-  
+      const result = await signIn("credentials", { email, password, redirect: false });
+      if (result?.error) {
+        setError("Email ou senha inválidos");
+        return;
+      }
+
+      router.replace("/costumer");
+      router.refresh();
+    } catch (err: any) {
+      setError(
+        err?.response?.status === 409
+          ? "Email já cadastrado"
+          : "Não foi possível concluir. Confira os dados (senha com no mínimo 8 caracteres)."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const inputClass =
+    "w-full h-[40px] rounded-[10px] px-3 mb-3 text-[14px] text-[#000000] bg-[#FFFFFF] outline-none";
 
   return (
     <div className="w-[100%] h-[100vh] m-0 p-[5px] box-border flex flex-col">
@@ -272,32 +216,61 @@ export default function Login() {
         <div className="w-full max-w-[300px] flex flex-col bg-[#e6e3e3] rounded-[17px] p-[20px] border-double border-4 border-[#4c1d95]">
           <h1 className="text-5xl mb-5">Bem vindo!</h1>
 
-          <div className="flex-1 flex flex-col justify-center items-center border-spacing-2">
-            <p className="mb-4">Entre ou Cadastre-se:</p>
+          <form onSubmit={handleSubmit} className="flex-1 flex flex-col justify-center items-center">
+            <p className="mb-4">{mode === "login" ? "Entre na sua conta:" : "Crie sua conta:"}</p>
 
-            <span
-              className="w-[100%] max-w-[250px]  h-[40px] rounded-[17px] flex justify-around items-center p-1 bg-[#FFFFFF] cursor-pointer text-[#000000] text-[14px] mb-5"
+            {mode === "register" && (
+              <input
+                className={inputClass}
+                placeholder="Nome"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                maxLength={100}
+              />
+            )}
+            <input
+              className={inputClass}
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
+            <input
+              className={inputClass}
+              type="password"
+              placeholder="Senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={mode === "register" ? 8 : 1}
+              maxLength={72}
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
+            />
+
+            {error && <p className="text-red-700 text-[13px] mb-3">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-[40px] rounded-[17px] bg-[#4c1d95] text-[#FFFFFF] text-[14px] mb-3 disabled:opacity-60"
+            >
+              {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Cadastrar"}
+            </button>
+
+            <button
+              type="button"
+              className="text-[13px] text-[#4c1d95] underline"
               onClick={() => {
-                handleSignin("google");
+                setError("");
+                setMode(mode === "login" ? "register" : "login");
               }}
             >
-              <div className="w-[30px] min-h-[50px] p-1 flex justify-center items-center">
-                <img className="w-[100%] " src={imgGoogle} alt="imagem" />
-              </div>
-              <div className="flex w-full justify-center items-center">
-                Fazer login com Google
-              </div>
-            </span>
-
-            <span className="w-[100%] max-w-[250px]  h-[40px] rounded-[17px] flex justify-around items-center p-1 bg-[#3b5998] cursor-pointer text-[#FFFFFF] text-[14px] mb-5">
-              <div className="w-[45px] min-h-[50px]  flex justify-center items-center">
-                <FacebookLogo size={29} weight="bold" color="#ffffff" />
-              </div>
-              <div className="flex w-full justify-center items-center">
-                Fazer login com Facebook
-              </div>
-            </span>
-          </div>
+              {mode === "login" ? "Não tem conta? Cadastre-se" : "Já tem conta? Entrar"}
+            </button>
+          </form>
         </div>
       </div>
     </div>

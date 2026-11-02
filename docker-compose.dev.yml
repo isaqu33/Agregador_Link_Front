@@ -1,0 +1,26 @@
+name: agregador_link
+
+services:
+  web:
+    container_name: agregador-web-dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - '${WEB_PORT_HOST:-3071}:3071'
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - agregador-network
+    restart: unless-stopped
+
+networks:
+  # Created by the backend compose (Agregador_Link_api); start that one first.
+  agregador-network:
+    external: true
+    name: agregador-network

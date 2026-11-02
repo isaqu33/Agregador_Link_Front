@@ -1,53 +1,14 @@
 import axios from "axios";
-import { useSelector } from "react-redux";
-import { userAltentication } from "../redux/sliceAltentication";
-import { CreateLink, User, link } from "../utils/types";
-import { string } from "yup";
+import { CreateLink, User } from "../utils/types";
 
-// console.log(dadosAutentication.data.uid?.uid);
+// The browser never holds the API token: requests go through the Next.js proxy
+// (app/api/backend), which adds it from the Auth.js session cookie.
+const api = axios.create({ baseURL: "/api/backend" });
 
 function useApi() {
-  const dadosAutentication = useSelector(userAltentication);
-
-  const api = axios.create({ baseURL: "http://localhost:3000" });
-
-  // const dadosAutentication = useSelector(userAltentication);
-
-  const getInvite = async (idconvit: string) => {
-    const { data } = await api.get(`/convite/${idconvit}`);
-    return data;
-  };
-
-  const getUrlImgfromBase = async (baseUrl: string) => {
-    const sucesso = await api.get("/createbaseUrl");
-
-    return sucesso;
-  };
-
-  const loginInOurApi = async (Uid?: any) => {
-    try {
-      const sucesso = await api.post("/auth/login", { uid: Uid });
-
-      console.log(sucesso.data.accessToken);
-
-      return sucesso.data.accessToken;
-    } catch (error) {
-      throw "error";
-    }
-  };
-
   const editProfile = async (data: User) => {
-    console.log(data);
     try {
-      const sucesso = await api.post("/user/editProfile", data, {
-        headers: {
-          Authorization: `Bearer ${dadosAutentication.data.accessToken}`,
-        },
-      });
-
-      console.log(sucesso);
-
-      return sucesso;
+      return await api.post("/user/editProfile", data);
     } catch (error) {
       throw "error";
     }
@@ -55,108 +16,64 @@ function useApi() {
 
   const getMe = async () => {
     try {
-      const sucesso = await api.get("/user/me", {
-        headers: {
-          Authorization: `Bearer ${dadosAutentication.data.accessToken}`,
-        },
-      });
-
-      // console.log(sucesso.data);
-
-      return sucesso;
+      return await api.get("/user/me");
     } catch (error) {
       throw "error";
     }
   };
 
   const CreateNewLink = async (data: CreateLink) => {
-    console.log(dadosAutentication.data.accessToken);
-
     try {
-      const sucesso = await api.post("/links/addLink", data, {
-        headers: {
-          Authorization: `Bearer ${dadosAutentication.data.accessToken}`,
-        },
-      });
-
-      console.log(sucesso.data);
-
-      return sucesso;
+      return await api.post("/links/addLink", data);
     } catch (error) {
       throw "error";
     }
   };
 
   const DeleteLink = async (idlink: string) => {
-    console.log(idlink);
-    let Idlink = idlink;
-
     try {
-      const sucesso = await api.post(
-        "/links/deletLink",
-        { idlink },
-        {
-          headers: {
-            Authorization: `Bearer ${dadosAutentication.data.accessToken}`,
-          },
-        }
-      );
-
-      console.log(sucesso.data);
-
-      return sucesso;
+      return await api.post("/links/deletLink", { idlink });
     } catch (error) {
       throw "error";
     }
   };
 
   const getDataById = async (idUser: string) => {
-    console.log(idUser);
-
     try {
-      const sucesso = await api.get(`/links/getDataUser/${idUser}`);
-
-      console.log(sucesso.data);
-      const sucessotipado: User = sucesso.data;
-
-      return sucessotipado;
+      const { data } = await api.get<User>(`/links/getDataUser/${idUser}`);
+      return data;
     } catch (error) {
       throw "error";
     }
   };
 
-  interface editActiveLink {
-    id: string;
-    activation: boolean;
-  }
-
   const editAtivacao = async (id: string, activation: boolean) => {
-    const data = {
-      id,
-      activation,
-    };
-   
+    const { data } = await api.post("/links/editActivet", { id, activation });
+    return data;
+  };
 
-    try {
-      const sucesso = await api.post(`/links/editActivet`, data);
+  const registerUser = async (data: { name: string; email: string; password: string }) => {
+    const response = await api.post("/auth/register", data);
+    return response.data;
+  };
 
-      console.log(sucesso)
-      return sucesso.data;
-    } catch (error) {
-      throw error;
-    }
+  // Returns the stored path (/media/<user>/<file>) that goes into photoURL.
+  const uploadImage = async (file: Blob): Promise<string> => {
+    const form = new FormData();
+    form.append("file", file, "image.png");
+    const { data } = await api.post<{ url: string }>("/media", form);
+    return data.url;
   };
 
   return {
-    getInvite,
-    getUrlImgfromBase,
-    loginInOurApi,
     editProfile,
     getMe,
     CreateNewLink,
     DeleteLink,
     getDataById,
     editAtivacao,
+    registerUser,
+    uploadImage,
   };
 }
 
