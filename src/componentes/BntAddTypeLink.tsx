@@ -27,23 +27,14 @@ export default function BntAddTypeLink({
   });
 
   return (
-    <div className="flex justify-center items-center w-[100%] h-[90px] ">
-      <div
-        className=" bg-[#4c1d95] h-[35px] w-full max-w-[220px] rounded-[20px] mr-4  pl-2"
-        onFocus={() => {
-          settexte("clicado");
-        }}
-        style={{
-          border: `${texte == "clicado" ? "#A971F1 1px solid" : "none"}`,
-        }}
-      >
+    <div className="flex justify-center items-center w-full mb-6">
+      <div className="bg-violet-600 hover:bg-violet-700 transition-colors h-11 w-full rounded-xl shadow-sm text-white">
         <div className="w-full h-full z-50">
           <Listbox value={selectedPerson} onChange={setSelectedPerson}>
             <div className="relative  w-full h-full">
-              <Listbox.Button className="relative w-full h-full cursor-pointer flex items-center justify-around  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 text-sm">
-                Adicione um novo link
-                {/* <CaretDown color={"#A971F1"} size={18} weight="bold" /> */}
-                <Plus color={"#A971F1"} size={30} />
+              <Listbox.Button className="relative w-full h-full cursor-pointer flex items-center justify-center gap-2 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 text-sm font-medium">
+                <Plus color={"#ffffff"} size={18} weight="bold" />
+                Adicionar novo link
               </Listbox.Button>
               <Transition
                 as={Fragment}
@@ -51,16 +42,14 @@ export default function BntAddTypeLink({
                 leaveFrom="opacity-100"
                 leaveTo="opacity-10"
               >
-                <Listbox.Options className="absolute mt-3 max-h-[250px]  scrollbar-none w-ful min-w-[200px]  overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-50">
+                <Listbox.Options className="absolute left-0 mt-2 max-h-[280px] w-full overflow-auto rounded-xl bg-white dark:bg-zinc-800 p-1 text-zinc-800 dark:text-zinc-100 shadow-lg ring-1 ring-black/5 border border-zinc-200 dark:border-zinc-700 focus:outline-none text-sm z-50">
                   {typesSocialMediaa.map((item, index) => (
                     <Listbox.Option
                       key={index}
                       className={({ active }) =>
-                        `relative cursor-pointer select-none py-1 flex justify-around items-center hover:bg-violet-400 ${
-                          active
-                            ? "bg-amber-100 text-amber-900"
-                            : "text-gray-900"
-                        }`
+                        `relative cursor-pointer select-none py-2 px-3 rounded-lg flex items-center ${
+                          active ? "bg-violet-50 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300" : "text-zinc-800 dark:text-zinc-100"
+                        } ${item.unavailable ? "opacity-40" : ""}`
                       }
                       onClick={() => {
                         onLinktypechanged(item.name);
@@ -68,13 +57,9 @@ export default function BntAddTypeLink({
                       value={item}
                       disabled={item.unavailable}
                     >
-                      <div className=" w-full flex justify-around">
-                        <div className="   w-[500%] flex justify-center">
-                          <item.Icon color={"#A971F1"} size={24} />
-                        </div>
-                        <div className="   w-[500%] flex justify-center">
-                          {item.name}
-                        </div>
+                      <div className="w-full flex items-center gap-3">
+                        <item.Icon color={"#7c3aed"} size={20} />
+                        <span>{item.name}</span>
                       </div>
                     </Listbox.Option>
                   ))}

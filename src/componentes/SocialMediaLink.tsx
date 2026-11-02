@@ -24,11 +24,10 @@ import { canvasPreview } from "../canvasPreview";
 import { useDebounceEffect } from "../useDebounceEffect";
 
 import "react-image-crop/dist/ReactCrop.css";
-import { useDispatch, useSelector } from "react-redux";
 
 const imgfeliz = "/assets/feliz.png";
 import useApi from "../server/api";
-import { sucess_User, userMe } from "../redux/user/sliceUser";
+import useMe, { ME_KEY } from "../hooks/useMe";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { TailSpin } from "react-loader-spinner";
 
@@ -53,7 +52,7 @@ function centerAspectCrop(
 }
 
 function SocialMediaLink() {
-  const dadosuser = useSelector(userMe);
+  const { data: me } = useMe();
   
 
   const { editProfile, uploadImage } = useApi();
@@ -82,13 +81,12 @@ function SocialMediaLink() {
     (photoURL: string) => editProfile({ photoURL }),
     {
       onSuccess: () => {
-        client.invalidateQueries("user");
+        client.invalidateQueries(ME_KEY);
         setImgSrc("");
 
       
         setshowLouder(false)
       },
-      onError: (err) => console.log(err),
     }
   );
 
@@ -157,7 +155,6 @@ function SocialMediaLink() {
       .then((blob) => uploadImage(blob))
       .then((url) => mutateChangePhotoProfile(url))
       .catch((err) => {
-        console.log(err);
         setshowLouder(false);
       });
   }, [imgselecionada]);
@@ -180,16 +177,16 @@ function SocialMediaLink() {
   ) : (
     <div className="w-full h-full flex flex-col items-center ">
       <div className="w-full flex items-center justify-center ">
-        <h2 className="md:text-[15px] text-[18px] mb-3 text-[#3f3f46]">
+        <h2 className="md:text-[15px] text-[18px] mb-3 text-[#3f3f46] dark:text-zinc-300">
           Escolha uma foto para seu perfil!
         </h2>
       </div>
 
       {!imgSrc ? (
         <div className="w-[120px] mb-3 h-[120px] rounded-[20px] flex items-center justify-center  overflow-hidden">
-          {dadosuser.data?.photoURL ? (
+          {me?.photoURL ? (
             <img
-              src={dadosuser.data?.photoURL}
+              src={me?.photoURL}
               alt="imagem"
               className="min-w-full h-[70%] rounded-[12px]"
             />
@@ -216,7 +213,7 @@ function SocialMediaLink() {
                   onChange={onSelectFile}
                 />
                 <span className="cursor-pointer flex justify-center items-center   text-sm hover:bg-violet-600">
-                  {`${dadosuser.data?.photoURL ? "Editar" : "Carregar"} Avatar`}
+                  {`${me?.photoURL ? "Editar" : "Carregar"} Avatar`}
                 </span>
               </label>
             </form>

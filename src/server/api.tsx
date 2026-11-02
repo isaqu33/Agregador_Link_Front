@@ -47,6 +47,16 @@ function useApi() {
     }
   };
 
+  const editLink = async (data: { id: string; name?: string; link?: string }) => {
+    const response = await api.post("/links/editLink", data);
+    return response.data;
+  };
+
+  const reorderLinks = async (ids: string[]) => {
+    const response = await api.post("/links/reorder", { ids });
+    return response.data;
+  };
+
   const editAtivacao = async (id: string, activation: boolean) => {
     const { data } = await api.post("/links/editActivet", { id, activation });
     return data;
@@ -71,6 +81,8 @@ function useApi() {
     CreateNewLink,
     DeleteLink,
     getDataById,
+    editLink,
+    reorderLinks,
     editAtivacao,
     registerUser,
     uploadImage,

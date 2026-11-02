@@ -24,7 +24,6 @@ interface ItensLinksProps {
 function ItensLinkPersonal({ link, formato, formatoBase }: ItensLinksProps) {
   const [typeIcon, setTypeIcon] = useState<any>();
 
-  // console.log(formatoBase);
 
   useEffect(() => {
     const setArray = typesSocialMediaa.filter(
@@ -32,7 +31,6 @@ function ItensLinkPersonal({ link, formato, formatoBase }: ItensLinksProps) {
     )[0];
 
     setTypeIcon(setArray);
-    // console.log(setArray?.Icon)
   }, [link]);
 
   return (

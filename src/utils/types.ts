@@ -21,7 +21,8 @@ export interface link {
     link?: string;
     type?: string;
     userId?: string;
-    isActivit?: boolean
+    isActivit?: boolean;
+    order?: number
 
 
 

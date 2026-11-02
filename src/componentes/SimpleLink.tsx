@@ -18,11 +18,25 @@ import { Listbox, Transition } from "@headlessui/react";
 import SocialMediaLink from "./SocialMediaLink";
 import BntAddTypeLink from "./BntAddTypeLink";
 import ImgNoLinks from "./ImgNoLinks";
+import useMe, { ME_KEY } from "../hooks/useMe";
 import useApi from "../server/api";
-import { useSelector } from "react-redux";
-import { userMe } from "../redux/user/sliceUser";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import { link, User } from "../utils/types";
+import { useMutation, useQueryClient } from "react-query";
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { Spinner } from "@chakra-ui/react";
 import ItensLinks from "./ItensLinks";
 import ModalCreateLink from "./ModalCreateLink";
 import { objmodalCreateLink } from "../utils/objectstoberendered";
@@ -31,12 +45,42 @@ import ModalDelet from "./ModalDelet";
 import AppState from "../AppState";
 
 function SimpleLink() {
-  const { DeleteLink } = useApi();
-  const client = useQueryClient();
-  const dadosuser = useSelector(userMe);
-  // console.log(JSON.parse(dadosuser.data.template));
+  const { data: me } = useMe();
+  const links = me?.links ?? [];
 
-  const [links, setLinks] = useState<link[]>(dadosuser.data.links);
+  const { reorderLinks } = useApi();
+  const client = useQueryClient();
+
+  // atualiza a lista na hora (otimista) e desfaz se a API recusar
+  const { mutate: reordenar } = useMutation((ids: string[]) => reorderLinks(ids), {
+    onMutate: async (ids) => {
+      await client.cancelQueries(ME_KEY);
+      const anterior = client.getQueryData<any>(ME_KEY);
+      client.setQueryData<any>(ME_KEY, (old: any) => {
+        if (!old) return old;
+        const porId = new Map<string, any>(old.data.links.map((l: any) => [l.id, l]));
+        const ordenados = ids.map((id) => porId.get(id)).filter(Boolean);
+        return { ...old, data: { ...old.data, links: ordenados } };
+      });
+      return { anterior };
+    },
+    onError: (_err, _ids, ctx) => {
+      if (ctx?.anterior) client.setQueryData(ME_KEY, ctx.anterior);
+    },
+    onSettled: () => client.invalidateQueries(ME_KEY),
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  function onDragEnd({ active, over }: DragEndEvent) {
+    if (!over || active.id === over.id) return;
+    const ids = links.map((l: any) => l.id as string);
+    reordenar(arrayMove(ids, ids.indexOf(String(active.id)), ids.indexOf(String(over.id))));
+  }
+
   const [modalCreateLink, setModalCreateLink] = useState<string>("");
   const [ismodalActivate, setismodalActivate] = useState(false);
   // const [modaldelet, setmodaldelet] = useState(true)
@@ -49,18 +93,6 @@ function SimpleLink() {
   }
   const [setingModal, setSetingModal] = useState({} as setingModalState);
 
-  const { mutate: mutatedeletlink } = useMutation(
-    (linkid: string) => DeleteLink(linkid),
-    {
-      onSuccess: () => {
-        client.invalidateQueries("user");
-
-        window.location.reload();
-      },
-      onError: (err) => console.log(err),
-    }
-  );
-
   useEffect(() => {
     // const setArray = texte.filter((elemento) => elemento.type == link?.type)[0];
 
@@ -71,7 +103,6 @@ function SimpleLink() {
         (elemento) => elemento.type === modalCreateLink
       )[0];
 
-      console.log(setArray);
 
       setSetingModal(setArray);
 
@@ -81,12 +112,6 @@ function SimpleLink() {
     }
   }, [modalCreateLink]);
 
-  useEffect(() => {
-    setLinks(dadosuser.data.links);
-  }, [dadosuser.data.links]);
-
-  // console.log(dadosuser.data.links);
-
   const url = window.location.href;
   
  
@@ -94,9 +119,7 @@ function SimpleLink() {
   useEffect(() => {
     if (url.indexOf("/costumer") != -1) {
 
-      console.log("entrou na condição se rota foi alterada")
       
-      console.log("costumer");
       AppState.incrementDescricao("");
       AppState.incrementCounter("");
       AppState.incrementFormato("");
@@ -113,30 +136,37 @@ function SimpleLink() {
         cancelModal={setismodalActivate}
         typeLinkSelected={setingModal}
         clinTypeSelected={setModalCreateLink}
-        callUrluser={() => {
-          window.location.reload();
-        }}
       />
     </div>
-  ) : JSON.stringify(dadosuser.data.links) != "[]" ? (
+  ) : !me ? (
+    <div className="w-full flex justify-center py-10">
+      <Spinner color="purple.500" />
+    </div>
+  ) : links.length > 0 ? (
     <div className=" w-full  flex flex-col h-full ">
       <BntAddTypeLink onLinktypechanged={setModalCreateLink} />
 
       {links && (
-        <div className=" w-full flex  justify-center  ">
-          <span className=" text-sm text-[#403f46] ">Seus links:</span>
+        <div className="w-full flex mb-3">
+          <span className="text-xs font-medium uppercase tracking-wider text-zinc-400">Seus links</span>
         </div>
       )}
-      <div className=" w-full">
-        {dadosuser?.data?.links?.map((item: any, index: any) => (
-          <ItensLinks
-            key={index}
-            link={item}
-            idlink={item.id}
-            // excluirLink={deletLink}
-          />
-        ))}
-      </div>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={onDragEnd}
+      >
+        <SortableContext
+          items={links.map((l: any) => l.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="w-full">
+            {links.map((item: any) => (
+              <ItensLinks key={item.id} link={item} idlink={item.id} />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
     </div>
   ) : (
     <div>

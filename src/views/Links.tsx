@@ -17,13 +17,13 @@ export default function Links() {
       name: "Links",
       Icon: (props: any) => <LinkSimple {...props} />,
       componente: (props: any) => <SimpleLink />,
-      texto: "Escolha seu link, ou esconha um tipo específico",
+      texto: "Escolha seu link ou um tipo específico",
     },
     {
       name: "Image",
       Icon: (props: any) => <Image {...props} />,
       componente: (props: any) => <SocialMediaLink />,
-      texto: "Escolha sua imagem ",
+      texto: "Escolha sua imagem",
     },
     // {
     //   name: "Image",
@@ -45,14 +45,14 @@ export default function Links() {
   const [componente, setcomponente] = useState<ReactNode>(<SimpleLink />);
 
   return (
-    <div className="flex flex-col min-h-[560px] text-3xl  ">
-      <h1 className=" text-zinc-700 text-[50px] mb-1">{corbordaElinktype}</h1>
+    <div className="flex flex-col min-h-[560px]">
+      <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{corbordaElinktype}</h1>
 
-      <h1 className="text-[12px] sm:text-[15px] text-zinc-600 mb-2">
+      <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
         {textos}
-      </h1>
+      </p>
 
-      <nav className="w-[100%] mt-3 p-1 flex justify-around  border-[#4c1d95] text-neutral-900 mb-3 flex-wrap">
+      <nav className="w-full mt-6 mb-6 flex border-b border-zinc-200 dark:border-zinc-800">
         {texte.map((item, index) => (
           <ButtonHeaderTypeLink
             key={index}

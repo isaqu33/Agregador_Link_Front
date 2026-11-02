@@ -1,15 +1,14 @@
-import { Eye, Link as IconLink } from "phosphor-react";
-import screenSize from "../hooks/screenSize";
+import { Link as IconLink } from "phosphor-react";
 
 export default function LogoApp() {
-  const tamanhoTela = screenSize();
-
   return (
-    <div className='flex flex-row font-["Lobster"] justify-between   sm:mb-6  text-7xl select-none '>
-      <div className=" flex">
-        <h1 className=" text-6xl text-zinc-100"> FaceLink </h1>
-        <IconLink className="text-zinc-100" weight="duotone" />
-      </div>
+    <div className="flex items-center gap-2 select-none">
+      <span className="w-9 h-9 rounded-xl bg-violet-600 flex items-center justify-center shadow-sm">
+        <IconLink size={20} weight="bold" color="#ffffff" />
+      </span>
+      <span className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+        Face<span className="text-violet-600 dark:text-violet-400">Link</span>
+      </span>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import LogoApp from "../componentes/logoApp";
+import ThemeToggle from "../componentes/ThemeToggle";
 import screenSize from "../hooks/screenSize";
 import useApi from "../server/api";
 
@@ -47,11 +48,14 @@ export default function Login() {
   }
 
   const inputClass =
-    "w-full h-[40px] rounded-[10px] px-3 mb-3 text-[14px] text-[#000000] bg-[#FFFFFF] outline-none";
+    "w-full h-11 rounded-lg px-3 mb-3 text-sm text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition";
 
   return (
-    <div className="w-[100%] h-[100vh] m-0 p-[5px] box-border flex flex-col">
-      <LogoApp />
+    <div className="w-full min-h-[100vh] box-border flex flex-col px-6 py-5">
+      <div className="flex items-center justify-between">
+        <LogoApp />
+        <ThemeToggle />
+      </div>
       <div className="w-[100%]  flex-1  flex justify-around items-center flex-wrap-reverse m-0 p-[5px] box-border">
         {tamanhoTela > 916 ? (
           <div className="w-full max-w-[600px] ">
@@ -213,12 +217,11 @@ export default function Login() {
           </div>
         ) : null}
 
-        <div className="w-full max-w-[300px] flex flex-col bg-[#e6e3e3] rounded-[17px] p-[20px] border-double border-4 border-[#4c1d95]">
-          <h1 className="text-5xl mb-5">Bem vindo!</h1>
+        <div className="w-full max-w-[400px] flex flex-col bg-white dark:bg-zinc-900 rounded-2xl p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Bem-vindo!</h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 mb-6">{mode === "login" ? "Entre na sua conta para continuar." : "Crie sua conta em poucos segundos."}</p>
 
-          <form onSubmit={handleSubmit} className="flex-1 flex flex-col justify-center items-center">
-            <p className="mb-4">{mode === "login" ? "Entre na sua conta:" : "Crie sua conta:"}</p>
-
+          <form onSubmit={handleSubmit} className="flex flex-col">
             {mode === "register" && (
               <input
                 className={inputClass}
@@ -250,19 +253,19 @@ export default function Login() {
               autoComplete={mode === "login" ? "current-password" : "new-password"}
             />
 
-            {error && <p className="text-red-700 text-[13px] mb-3">{error}</p>}
+            {error && <p className="text-red-600 text-[13px] mb-3">{error}</p>}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-[40px] rounded-[17px] bg-[#4c1d95] text-[#FFFFFF] text-[14px] mb-3 disabled:opacity-60"
+              className="w-full h-11 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium mb-4 transition-colors disabled:opacity-60"
             >
               {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Cadastrar"}
             </button>
 
             <button
               type="button"
-              className="text-[13px] text-[#4c1d95] underline"
+              className="text-[13px] text-violet-700 dark:text-violet-300 hover:underline"
               onClick={() => {
                 setError("");
                 setMode(mode === "login" ? "register" : "login");

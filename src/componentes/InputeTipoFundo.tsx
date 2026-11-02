@@ -45,8 +45,6 @@ function InputeTipoFundo({ cor, name, estado }: InputeTipoFundoProp) {
 
   const [first, setfirst] = useState(0);
 
-  console.log(gradienteCor);
-  console.log(normalCor);
 
   useEffect(() => {
     if (cor.indexOf("linear") != -1) {
@@ -99,19 +97,16 @@ function InputeTipoFundo({ cor, name, estado }: InputeTipoFundoProp) {
   ];
 
   return (
-    <FormControl className=" text-[#4c1d95]">
-      <FormLabel>Fundo</FormLabel>
-      <Divider></Divider>
+    <FormControl>
+      <FormLabel className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Fundo</FormLabel>
 
-      <div className=" w-full flex justify-around items-center mt-4 ">
-        <div className=" w-[500px] h-full">
+      <div className="w-full flex flex-wrap gap-3 items-center">
+        <div className="flex-1 min-w-[180px] text-zinc-900 dark:text-zinc-100">
           <Select
-            size="lg"
+            size="md"
             onChange={(e) => {
-              console.log(e.target.value);
               if (e.target.value == "opcao1") {
                 setfirst(0);
-                console.log("cor solida");
               } else {
                 setfirst(1);
               }
@@ -126,7 +121,7 @@ function InputeTipoFundo({ cor, name, estado }: InputeTipoFundoProp) {
             ;
           </Select>
         </div>
-        <div className=" flex w-[300px] h-[50px] bg-[#e4e4e7] justify-around items-center p-3 rounded-md">
+        <div className="flex gap-2 items-center">
           {first == 0
             ? objCorSolida.map((item, indem) => (
                 <div
@@ -136,11 +131,11 @@ function InputeTipoFundo({ cor, name, estado }: InputeTipoFundoProp) {
                     setGradienteCor("");
                     setnormalCor(item.cor);
                   }}
-                  className=" w-[40px] h-[40px]   rounded-full p3 hover:cursor-pointer flex justify-center items-center"
+                  className="w-9 h-9 rounded-full cursor-pointer flex justify-center items-center ring-1 ring-black/10 hover:scale-105 transition-transform"
                   style={{ backgroundColor: `${item.cor}` }}
                 >
                   {normalCor == item.cor ? (
-                    <Check color={"white"} size={22} />
+                    <Check color={"white"} size={18} weight="bold" />
                   ) : null}
                 </div>
               ))
@@ -152,13 +147,13 @@ function InputeTipoFundo({ cor, name, estado }: InputeTipoFundoProp) {
                     setnormalCor("");
                     setGradienteCor(item.cor);
                   }}
-                  className=" w-[40px] h-[40px]   rounded-full p3 hover:cursor-pointer flex justify-center items-center"
+                  className="w-9 h-9 rounded-full cursor-pointer flex justify-center items-center ring-1 ring-black/10 hover:scale-105 transition-transform"
                   style={{
                     backgroundImage: item.cor,
                   }}
                 >
                   {gradienteCor == item.cor ? (
-                    <Check color="white" size={22} />
+                    <Check color="white" size={18} weight="bold" />
                   ) : null}
                 </div>
               ))}

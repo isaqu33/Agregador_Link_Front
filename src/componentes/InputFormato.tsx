@@ -38,18 +38,16 @@ function InputFormato({ textoApi, name }: InputFormatoProp) {
     // setInputValue(event.target.value);
     // Faça algo com o valor do input
     AppState.incrementCounter(event.target.value);
-    console.log(event.target.value);
   };
 
   return (
-    <div className=" text-[#4c1d95]">
-      <FormLabel>Formato</FormLabel>
-      <Divider></Divider>
+    <div>
+      <FormLabel className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Formato dos botões</FormLabel>
       {/* <Textarea placeholder="Here is a sample placeholder" /> */}
 
       <div
         style={{ borderRadius: "50px" }}
-        className="w-full flex  items-center min-h-[100px]  p-5"
+        className="w-full flex flex-wrap gap-3 items-center"
       >
         {formatos.map((item, index) => (
           <div
@@ -59,7 +57,7 @@ function InputFormato({ textoApi, name }: InputFormatoProp) {
               AppState.incrementFormato("");
               AppState.incrementFormato(item.formato);
             }}
-            className=" w-[170px] h-[40px] flex justify-center items-center mt-3 bg-[#d1d5db] mr-3"
+            className="w-[120px] h-10 cursor-pointer bg-zinc-200 dark:bg-zinc-700 hover:bg-violet-200 dark:hover:bg-violet-500/40 border border-zinc-300 dark:border-zinc-600 transition-colors"
           ></div>
         ))}
       </div>

@@ -3,7 +3,7 @@ import React from 'react'
 function ImgNoLinks() {
   return (
     <div className="w-full flex justify-around items-center flex-col  flex-1 p-3 ">
-        <div className="w-full max-w-[240px] mb-7 ">
+        <div className="w-full max-w-[200px] mb-5 ">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             data-name="Layer 1"
@@ -82,7 +82,7 @@ function ImgNoLinks() {
           </svg>
         </div>
 
-        <h2 className="text-[15px] text-[#821313] ">Nenhum link adicionado</h2>
+        <h2 className="text-sm text-zinc-500 dark:text-zinc-400">Nenhum link adicionado ainda</h2>
     </div>
   )
 }

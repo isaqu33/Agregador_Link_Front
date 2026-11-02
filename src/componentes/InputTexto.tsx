@@ -32,17 +32,15 @@ function InputTexto({ textoApi,name }: InputTextoProp) {
     // setInputValue(event.target.value);
     // Faça algo com o valor do input
     AppState.incrementCounter(event.target.value);
-    console.log(event.target.value);
   };
 
   return (
-    <div className=" text-[#4c1d95]">
-      <FormLabel>Descrição</FormLabel>
-      <Divider></Divider>
+    <div>
+      <FormLabel className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Descrição</FormLabel>
       {/* <Textarea placeholder="Here is a sample placeholder" /> */}
 
       <div className="w-full flex justify-center items-center">
-        <div className=" min-w-[700px]  flex justify-center items-center mt-3 text-black">
+        <div className="w-full flex justify-center items-center text-zinc-900 dark:text-zinc-100">
           <Textarea
             placeholder={textoApi ? textoApi : "Escreva aqui sua descrição!"}
             onChange={handleSubmit}
