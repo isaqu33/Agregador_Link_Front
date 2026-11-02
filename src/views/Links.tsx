@@ -1,4 +1,3 @@
-import { Link, Outlet } from "react-router-dom";
 import {
   InstagramLogo,
   LinkSimple,
@@ -11,7 +10,6 @@ import { Component, ReactElement, ReactNode, useEffect, useState } from "react";
 import SimpleLink from "../componentes/SimpleLink";
 import SocialMediaLink from "../componentes/SocialMediaLink";
 import ButtonHeaderTypeLink from "../componentes/ButtonHeaderTypeLink";
-import ImgLink from "../componentes/ImgLink";
 
 export default function Links() {
   const texte = [

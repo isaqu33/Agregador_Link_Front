@@ -10,12 +10,9 @@ import InputFormato from "../componentes/InputFormato";
 import { Form } from "@unform/web";
 import { FormHandles } from "@unform/core";
 import useApi from "../server/api";
-import { useNavigate } from "react-router-dom";
 
 const Appearance = observer(() => {
   const { editProfile, getMe } = useApi();
-
-  const navigate = useNavigate();
 
   const client = useQueryClient();
   const { mutate: mutateChangeProfile } = useMutation(

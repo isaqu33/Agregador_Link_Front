@@ -11,7 +11,7 @@ import {
 } from "phosphor-react";
 import { useEffect, useState } from "react";
 
-import img from "../assets/pixeltruewebdesign.png";
+const img = "/assets/pixeltruewebdesign.png";
 
 import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";

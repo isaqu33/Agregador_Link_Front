@@ -24,14 +24,10 @@ import { canvasPreview } from "../canvasPreview";
 import { useDebounceEffect } from "../useDebounceEffect";
 
 import "react-image-crop/dist/ReactCrop.css";
-import { handleUpload, storage } from "../server/firebase";
 import { useDispatch, useSelector } from "react-redux";
-import { userAltentication } from "../redux/sliceAltentication";
-import { getDownloadURL, ref, uploadString } from "firebase/storage";
 
-import imgfeliz from "../assets/feliz.png";
+const imgfeliz = "/assets/feliz.png";
 import useApi from "../server/api";
-import { User } from "firebase/auth";
 import { sucess_User, userMe } from "../redux/user/sliceUser";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { TailSpin } from "react-loader-spinner";
@@ -60,8 +56,7 @@ function SocialMediaLink() {
   const dadosuser = useSelector(userMe);
   
 
-  const { editProfile, getMe } = useApi();
-  const dadosUser = useSelector(userAltentication);
+  const { editProfile, uploadImage } = useApi();
 
   // -----------------------------------------------------------------
   const [imgSrc, setImgSrc] = useState("");
@@ -140,12 +135,6 @@ function SocialMediaLink() {
   );
 
   async function saveonServerImgSaved() {
-    const storageRef = ref(
-      storage,
-      `provedor/imagens/${dadosUser.data.uid as string}`
-    );
-
-   
 
     const texte1 = await canvasPreview(
       imgRef.current,
@@ -160,22 +149,17 @@ function SocialMediaLink() {
   }
 
   useEffect(() => {
-    const storageRef = ref(
-      storage,
-      `provedor/imagens/${dadosUser.data.uid as string}`
-    );
-    if (imgselecionada) {
-      
-      uploadString(storageRef, imgselecionada as string, "data_url")
-        .then(async (snapshot: any) => {
-          const urlFromFirebase = await getDownloadURL(snapshot.ref);
+    if (!imgselecionada) return;
 
-          mutateChangePhotoProfile(urlFromFirebase);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+    // the cropped image arrives as a data URL; send it to the API (Azure Blob)
+    fetch(imgselecionada as string)
+      .then((res) => res.blob())
+      .then((blob) => uploadImage(blob))
+      .then((url) => mutateChangePhotoProfile(url))
+      .catch((err) => {
+        console.log(err);
+        setshowLouder(false);
+      });
   }, [imgselecionada]);
 
  

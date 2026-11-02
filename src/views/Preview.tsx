@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import imgfeliz from "../assets/feliz.png";
+import { useParams } from "next/navigation";
+const imgfeliz = "/assets/feliz.png";
 
 import { Image } from "@chakra-ui/react";
 
@@ -28,7 +28,7 @@ const Preview = observer(({ dados }: PreviewProps) => {
 
   const queryClient = useQueryClient();
 
-  const data = queryClient.getQueryData("USER");
+  const data: any = queryClient.getQueryData("USER");
   // console.log(data?.data);
   const template = data?.data?.template;
   // console.log(template);
