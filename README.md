@@ -3,7 +3,7 @@
 Front do agregador de links (estilo Linktree): login e cadastro, edição de links e aparência, preview em tempo real e
 página pública do perfil. A API está em [Agregador_Link_api](https://github.com/isaqu33/Agregador_Link_api).
 
-- **Stack:** Next.js 14 (App Router), Auth.js v5, Chakra UI, Tailwind, Redux Toolkit, react-query
+- **Stack:** Next.js 14 (App Router), Auth.js v5, Chakra UI, Tailwind, react-query, MobX
 - **Docs:** [`docs/`](docs/README.md) — rotas, proxy, variáveis e armadilhas
 
 ## Como funciona o login
