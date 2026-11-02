@@ -6,7 +6,7 @@ const apiUrl = process.env.API_INTERNAL_URL ?? 'http://localhost:3070';
 // Only these API paths are reachable from the browser. /auth/login is not here on
 // purpose: logging in goes through Auth.js, never straight to the API.
 const PUBLIC_PATHS = [/^auth\/register$/, /^links\/getDataUser\/[^/]+$/];
-const PRIVATE_PATHS = [/^user\/(me|editProfile)$/, /^links\/(addLink|deletLink|editActivet)$/, /^media$/];
+const PRIVATE_PATHS = [/^user\/(me|editProfile)$/, /^links\/(addLink|deletLink|editActivet|editLink|reorder)$/, /^media$/];
 
 async function proxy(req: NextRequest, { params }: { params: { path: string[] } }) {
   const path = params.path.join('/');

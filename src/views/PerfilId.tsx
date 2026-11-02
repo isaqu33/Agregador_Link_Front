@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useParams } from "next/navigation";
 const imgfeliz = "/assets/feliz.png";
 
 import { Image } from "@chakra-ui/react";
 
 import { Fire } from "phosphor-react";
-import { userMe } from "../redux/user/sliceUser";
 import { link } from "../utils/types";
 import ItensLinks from "../componentes/ItensLinks";
 import ItensLinkPersonal from "../componentes/ItensLinkPersonal";
@@ -19,7 +17,7 @@ function PerfilId() {
   const { getDataById } = useApi();
 
   const { data, isLoading, refetch } = useQuery(
-    "infouserByid",
+    ["publicProfile", id],
     () => getDataById(id as string),
 
     {
@@ -27,20 +25,15 @@ function PerfilId() {
     }
   );
 
-  console.log(data?.links);
 
   const [gradienteCor, setGradienteCor] = useState("");
   const [normalCor, setnormalCor] = useState("");
 
-  console.log(gradienteCor);
-  console.log(normalCor);
 
   useEffect(() => {
     if (data?.template) {
-      // console.log("entrou na condição de se existir template");
       const parsedTemplate = JSON.parse(data?.template as string).cor;
 
-      // console.log(parsedTemplate);
 
       if (parsedTemplate.indexOf("linear") != -1) {
         setnormalCor("");

@@ -11,7 +11,6 @@ export async function canvasPreview(
   rotate = 0,
   selectPhoto?: boolean
 ) {
-  console.log("entrou na função carvasprevil");
 
   var base64 = false;
 

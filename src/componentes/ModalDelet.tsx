@@ -11,6 +11,7 @@ import {
 import React from "react";
 import { useMutation, useQueryClient } from "react-query";
 import useApi from "../server/api";
+import { ME_KEY } from "../hooks/useMe";
 import { Trash } from "phosphor-react";
 
 interface ModalDeletProp {
@@ -29,11 +30,9 @@ function ModalDelet({ idLink }: ModalDeletProp) {
     (linkid: string) => DeleteLink(linkid),
     {
       onSuccess: () => {
-        client.invalidateQueries("user");
-
-        window.location.reload();
+        client.invalidateQueries(ME_KEY);
+        onClose();
       },
-      onError: (err) => console.log(err),
     }
   );
 
@@ -42,18 +41,14 @@ function ModalDelet({ idLink }: ModalDeletProp) {
   }
   return (
     <>
-      <Button
-        colorScheme="white"
+      <button
+        type="button"
+        aria-label="Excluir link"
         onClick={onOpen}
-        // className=" w-[40px] "
+        className="w-9 h-9 flex items-center justify-center rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/20 transition-colors"
       >
-        <Trash
-          size={26}
-          className=" hover:cursor-pointer"
-          color={"red"}
-          weight="fill"
-        ></Trash>
-      </Button>
+        <Trash size={18} />
+      </button>
 
       <AlertDialog
         isOpen={isOpen}

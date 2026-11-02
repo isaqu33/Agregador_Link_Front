@@ -1,12 +1,11 @@
-//className='w-full bg-black h-[100%] min-h-[950px]'
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 const img = "/assets/pixeltruewebdesign.png";
 
 import {
+  ArrowSquareOut,
   Eye,
   HouseSimple,
   Link as IconLink,
@@ -14,191 +13,147 @@ import {
   SignOut,
   SquaresFour,
 } from "phosphor-react";
-import { useDispatch, useSelector } from "react-redux";
 import LogoApp from "./componentes/logoApp";
-import { request_User, sucess_User, userMe } from "./redux/user/sliceUser";
-import useApi from "./server/api";
+import ThemeToggle from "./componentes/ThemeToggle";
+import useMe from "./hooks/useMe";
 
-import { useQuery } from "react-query";
+import { useQueryClient } from "react-query";
 import Preview from "./views/Preview";
 import screenSize from "../src/hooks/screenSize";
 import AppState from "./AppState";
 import { observer } from "mobx-react";
 
 const Shell = observer(({ children }: { children: React.ReactNode }) => {
-  const { getMe } = useApi();
-
   const router = useRouter();
 
-  const dadosuser = useSelector(userMe);
-
-  const dispath = useDispatch();
+  const queryClient = useQueryClient();
 
   const tamanhoTela = screenSize();
 
-  // console.log(tamanhoTela);
 
-  const { data, isLoading, refetch } = useQuery("USER", getMe, {
-    staleTime: 1000 * 60 * 60,
+  const sair = () => {
+    queryClient.clear();
+    signOut({ callbackUrl: "/login" });
+  };
 
-    onSuccess: (data) => dispath(sucess_User(data.data)),
-
-    // an expired or invalid session sends the user back to the login
-    onError: () => signOut({ callbackUrl: "/login" }),
-  });
+  // an expired or invalid session sends the user back to the login
+  const { data: me } = useMe({ onError: sair });
 
   const NavLink = [
     {
       Nome: "Links",
       rota: "/costumer",
-      icon: <LinkSimpleHorizontalBreak size={22} />,
+      icon: <LinkSimpleHorizontalBreak size={18} />,
     },
     {
       Nome: "Aparência",
       rota: "/costumer/appearance",
-      icon: <SquaresFour size={22} />,
+      icon: <SquaresFour size={18} />,
     },
   ];
 
-  // console.log(AppState.formato)
 
-  const [colorbg, setcolorbg] = useState("Links");
+  const pathname = usePathname();
   const [previo, setprevio] = useState(false);
 
   const url = window.location.href;
-  // console.log(url);
-  // console.log(url.indexOf("costumer/appearance"));
-  // console.log(url.indexOf("/costumer"));
 
   useEffect(() => {
     if (url.indexOf("costumer/appearance") != -1) {
-      // setcolorbg("Appearance");
-
       router.replace("/costumer");
-    }
-    if (url.indexOf("/costumer") != -1) {
-      setcolorbg("Links");
-      // console.log("costumer")
     }
   }, []);
 
   return (
-    <>
-      <div className="w-full flex justify-around p-1 ">
-        <div className="w-full  text-zinc-100 flex flex-col items-center pt-[20px] select-none  min-h-[100vh] scrollbar scrollbar-thumb-gray-900 scrollbar-track-gray-100">
-          <div className="w-full flex justify-center items-center flex-col  max-w-[1000px] mb-[10px]">
-            <div className="w-full   flex h-[90px] sm:h-[100px] ">
-              <div className="w-full  flex justify-between items-center h-[90px]  sm:h-[100px]  ">
-                <LogoApp />
+    <div className="min-h-[100vh] w-full text-zinc-900 select-none">
+      <header className="w-full bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <LogoApp />
 
-                {tamanhoTela <= 918 ? (
-                  <Link
-                    onClick={() => {
-                      if (previo) {
-                        setprevio(false);
-                      } else setprevio(true);
-                    }}
-                    href={previo ? "/costumer" : "/costumer/preview"}
-                    replace
-                    className=" flex  items-center justify-between bg-[#796292] p-1 rounded-lg "
-                  >
-                    {previo ? (
-                      <>
-                        <HouseSimple size={22} />{" "}
-                      </>
-                    ) : (
-                      <>
-                        <Eye size={22} />
-                      </>
-                    )}
-                  </Link>
-                ) : null}
-              </div>
-            </div>
-
-            <nav className="w-[100%] max-w-[900px]    mt-3 overflow-x-auto scrollbar-none p-4 flex justify-between items-center  ">
-              <div className=" flex">
-                {NavLink.map((item, index) => (
-                  <Link
-                    key={index}
-                    style={{
-                      backgroundColor: `${
-                        colorbg == item.Nome ? "#cc9dec" : "rgb(76 29 149)"
-                      }`,
-                    }}
-                    href={item.rota}
-                    onClick={() => {
-                      setcolorbg(item.Nome);
-                    }}
-                    className="text-xl mr-5 w-20px  hover:bg-violet-200 p-3 rounded-md flex  justify-between items-center"
-                  >
-                    {item.Nome}
-
-                    <div>{item.icon}</div>
-                  </Link>
-                ))}
-              </div>
-
-              <span
-                onClick={() => {
-                  dispath(sucess_User(""));
-                  signOut({ callbackUrl: "/login" });
-                }}
-                className=" bg-red-700 p-1 rounded-lg flex justify-center items-center"
+          <div className="flex items-center gap-2">
+            {me?.id ? (
+              <a
+                href={`/${me.id}`}
+                target="_blank"
+                className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg px-3 h-9 transition-colors"
               >
-                {" "}
-                <SignOut size={22} /> sair
-              </span>
-            </nav>
-          </div>
-          {/* bg-zinc-200 */}
+                <ArrowSquareOut size={16} />
+                Ver Link
+              </a>
+            ) : null}
 
-          <div className="w-full bg-zinc-200  max-w-[900px] rounded-[20px] p-2 min-h-[400px]">
-            {children}
+            <ThemeToggle />
+
+            {tamanhoTela <= 918 ? (
+              <Link
+                onClick={() => setprevio(!previo)}
+                href={previo ? "/costumer" : "/costumer/preview"}
+                replace
+                aria-label={previo ? "Voltar" : "Pré-visualizar"}
+                className="flex items-center justify-center w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              >
+                {previo ? <HouseSimple size={18} /> : <Eye size={18} />}
+              </Link>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={sair}
+              className="flex items-center gap-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/20 rounded-lg px-3 h-9 transition-colors"
+            >
+              <SignOut size={16} />
+              Sair
+            </button>
           </div>
         </div>
+      </header>
+
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-6 flex gap-8 items-start justify-center">
+        <main className="w-full max-w-[760px] min-w-0">
+          <nav className="flex gap-1 mb-4 p-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl w-fit">
+            {NavLink.map((item) => {
+              const ativo =
+                item.rota === "/costumer"
+                  ? pathname === "/costumer"
+                  : pathname?.startsWith(item.rota);
+              return (
+                <Link
+                  key={item.Nome}
+                  href={item.rota}
+                  className={`flex items-center gap-2 text-sm font-medium px-4 h-9 rounded-lg transition-colors ${
+                    ativo
+                      ? "bg-white dark:bg-zinc-700 text-violet-700 dark:text-violet-300 shadow-sm"
+                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+                  }`}
+                >
+                  {item.icon}
+                  {item.Nome}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm p-5 sm:p-8 min-h-[400px]">
+            {children}
+          </div>
+        </main>
 
         {tamanhoTela >= 918 ? (
-          <div className="w-[600px] h-full min-h-[840px] flex flex-col justify-center items-center ">
-            <a
-              href={`/${data?.data.id}`}
-              target="_blank"
-              className="w-[25%] rounded-xl mb-5 bg-[#FF8066] h-full flex justify-center items-center "
-            >
-              Ver Link
-            </a>
-            <div className="w-[65%] min-h-[530px] bg-slate-700 border-solid border-[14px] rounded-[45px] border-[#000000] overflow-hidden  ">
-              <div
-                // src="http://localhost:3071/preview"
-                className="w-full h-[550px] overflow-y-scroll "
-              >
-                <Preview dados={data?.data}></Preview>
+          <aside className="w-[320px] shrink-0 sticky top-6 flex flex-col items-center">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-3">
+              Pré-visualização
+            </p>
+            <div className="w-full h-[640px] bg-zinc-900 dark:bg-zinc-800 dark:ring-1 dark:ring-zinc-700 rounded-[44px] p-[10px] shadow-xl">
+              <div className="w-full h-full rounded-[34px] overflow-hidden bg-white">
+                <div className="w-full h-full overflow-y-auto scrollbar-none">
+                  <Preview dados={me}></Preview>
+                </div>
               </div>
             </div>
-          </div>
+          </aside>
         ) : null}
-
-        {/* <div className="w-[65%] min-h-[530px] bg-slate-700 border-solid border-[10px] rounded-[30px] border-[#060606] overflow-hidden">
-        <iframe
-          width="560"
-          height="315"
-          src="https://www.youtube.com/embed/MqpaHQzP3CM"
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3835.359125222547!2d-47.996405284559266!3d-15.994810088926958!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9359875618741535%3A0x25d492a2f966e460!2sSanta%20Maria%2C%20Bras%C3%ADlia%20-%20DF%2C%2072593-112!5e0!3m2!1spt-BR!2sbr!4v1665428496866!5m2!1spt-BR!2sbr"
-          width="400"
-          height="400"
-          style={{ border: 0 }}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-        ></iframe>
-      </div> */}
       </div>
-    </>
+    </div>
   );
 });
 

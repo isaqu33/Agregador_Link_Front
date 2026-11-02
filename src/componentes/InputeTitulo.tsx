@@ -11,7 +11,6 @@ interface InputeTituloProp {
 }
 
 const InputeTitulo = observer(({ tituloUser, name }: InputeTituloProp) => {
-  console.log(tituloUser);
 
   const { fieldName, defaultValue, registerField, error } = useField(name);
 
@@ -36,19 +35,17 @@ const InputeTitulo = observer(({ tituloUser, name }: InputeTituloProp) => {
     // setInputValue(event.target.value);
     // Faça algo com o valor do input
     AppState.incrementDescricao(event.target.value);
-    // console.log(event.target.value);
   };
   return (
-    <FormControl className=" text-[#4c1d95]">
-      <FormLabel>Título</FormLabel>
-      <Divider></Divider>
+    <FormControl>
+      <FormLabel className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Título</FormLabel>
       {/* <Select placeholder="Select country" value={"nfkjn"} className=" bg-black">
         <option>United Arab Emirates</option>
         <option>Nigeria</option>
       </Select> */}
 
       <div className="w-full flex justify-center items-center">
-        <div className=" min-w-[700px]  flex justify-center items-center mt-3 text-black">
+        <div className="w-full flex justify-center items-center text-zinc-900 dark:text-zinc-100">
           <FormControl >
             {/* <FormControl isRequired> */}
             <Input

@@ -3,27 +3,33 @@
 @tailwind utilities;
 
 body {
-
-    @apply bg-violet-900
+    @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-[#0b0b0f] dark:text-zinc-100;
 }
 
-/* Works on Firefox */
+/* Scrollbar discreta */
 * {
     scrollbar-width: thin;
-    scrollbar-color: blue orange;
+    scrollbar-color: #d4d4d8 transparent;
 }
 
-/* Works on Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
-    width: 1px;
+    width: 6px;
+    height: 6px;
 }
 
 *::-webkit-scrollbar-track {
-    background: #4c1d95;
+    background: transparent;
 }
 
 *::-webkit-scrollbar-thumb {
-    background-color: #cc9dec;
+    background-color: #d4d4d8;
     border-radius: 20px;
-    border: 4px solid #cc9dec;
+}
+
+.dark * {
+    scrollbar-color: #52525b transparent;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+    background-color: #52525b;
 }

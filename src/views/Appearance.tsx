@@ -4,75 +4,75 @@ import InputeTitulo from "../componentes/InputeTitulo";
 import { observer } from "mobx-react";
 import AppState from "../AppState";
 import InputTexto from "../componentes/InputTexto";
-import { MutableRefObject, useEffect, useRef } from "react";
-import { User, UserCACH } from "../utils/types";
+import { MutableRefObject, useRef, useState } from "react";
 import InputFormato from "../componentes/InputFormato";
 import { Form } from "@unform/web";
 import { FormHandles } from "@unform/core";
 import useApi from "../server/api";
+import useMe, { ME_KEY } from "../hooks/useMe";
 
 const Appearance = observer(() => {
-  const { editProfile, getMe } = useApi();
+  const { editProfile } = useApi();
 
   const client = useQueryClient();
+  const { data: me } = useMe();
+
+  // remonta o formulário depois de salvar, para limpar os campos digitados
+  const [formKey, setFormKey] = useState(0);
   const { mutate: mutateChangeProfile } = useMutation(
     (data: any) => editProfile(data),
     {
-      onSuccess: () => {
-        client.invalidateQueries("user");
+      onSuccess: async () => {
+        await client.invalidateQueries(ME_KEY);
         AppState.incrementCounter("");
         AppState.incrementDescricao("");
         AppState.incrementFormato("");
         AppState.incrementcorFundo("");
-        window.location.reload();
+        setFormKey((k) => k + 1);
       },
-      onError: (err) => console.log(err),
     }
   );
-  const queryClient = useQueryClient();
 
-  const data: UserCACH | undefined = queryClient.getQueryData("USER");
-
-  // Dentro do seu componente
-  const template = data?.data?.template; // Verifique se o valor está definido corretamente
+  const template = me?.template;
+  const atual = template ? JSON.parse(template) : {};
 
   const formRef = useRef() as MutableRefObject<FormHandles>;
   const handleFormSubmit = async (data: any) => {
-    console.log(data);
 
+    // campo que o usuário não mexeu mantém o valor salvo (antes sobrescrevia com vazio)
     let text = {
       template: JSON.stringify({
-        cor: data.cor,
-        formato: data.formato,
+        cor: data.cor || atual.cor || "",
+        formato: data.formato || atual.formato || "",
       }),
-      title: data.title,
-      about: data.about,
+      title: data.title || me?.title,
+      about: data.about || me?.about,
     };
 
-    console.log(text);
 
     if (text) {
       mutateChangeProfile(text);
     }
   };
   return (
-    <div className="flex flex-col min-h-[560px] text-3xl ">
-      <Form ref={formRef} onSubmit={handleFormSubmit}>
-        <h1 className="text-[50px] text-zinc-600">Aparência</h1>
+    <div className="flex flex-col min-h-[560px]">
+      <Form key={formKey} ref={formRef} onSubmit={handleFormSubmit}>
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Aparência</h1>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Personalize o fundo, o título e o formato dos botões da sua página.</p>
 
-        <div className="  mt-6 rounded-lg p-3 bg-[#ffffff]">
-          <div className=" mb-4 ">
+        <div className="mt-6 flex flex-col gap-6">
+          <div>
             <InputeTipoFundo
               estado={AppState.corFundo}
               name="cor"
-              cor={template ? JSON.parse(template).cor : ""}
+              cor={atual.cor ?? ""}
             />
           </div>
 
-          <div className="mb-4 ">
+          <div>
             <InputeTitulo
               name="title"
-              tituloUser={data?.data.title as string}
+              tituloUser={me?.title as string}
             />
           </div>
 
@@ -84,10 +84,10 @@ const Appearance = observer(() => {
             <InputFormato name="formato"></InputFormato>
           </div>
 
-          <div className=" w-full min-h-[50px] h-7  flex justify-center items-center ">
+          <div className="w-full flex justify-end pt-2 border-t border-zinc-100 dark:border-zinc-800">
             <button
               type="submit"
-              className=" w-[150px]  bg-[#4c1d95] flex justify-center items-center rounded-[17px]"
+              className="h-10 px-5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium rounded-lg transition-colors"
             >
               Atualizar
             </button>

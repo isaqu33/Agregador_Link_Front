@@ -15,8 +15,7 @@ import Input from "./Input";
 import { FormHandles } from "@unform/core";
 import { useMutation, useQueryClient } from "react-query";
 import useApi from "../server/api";
-import { useSelector } from "react-redux";
-import { userMe } from "../redux/user/sliceUser";
+import { ME_KEY } from "../hooks/useMe";
 
 interface setingModalState {
   type: string;
@@ -29,33 +28,25 @@ interface ModalCreateLinkProp {
   cancelModal: (item: any) => any;
   typeLinkSelected: setingModalState;
   clinTypeSelected: (item: string) => any;
-  callUrluser: (item: string) => void;
 }
 
 function ModalCreateLink({
   cancelModal,
   typeLinkSelected,
   clinTypeSelected,
-  callUrluser,
 }: ModalCreateLinkProp) {
   const { CreateNewLink } = useApi();
   const client = useQueryClient();
 
-  const dadosuser = useSelector(userMe);
-
-  console.log(typeLinkSelected);
 
   const { mutate: mutateCreateLink } = useMutation(
     (data: CreateLink) => CreateNewLink(data),
     {
       onSuccess: (sus) => {
-        // console.log(sus);
-        client.invalidateQueries("user");
+        client.invalidateQueries(ME_KEY);
         clinTypeSelected("");
         cancelModal(false);
-        callUrluser(dadosuser.data.id);
       },
-      onError: (err) => console.log(err),
     }
   );
 
@@ -91,22 +82,13 @@ function ModalCreateLink({
   const handleFormSubmit = async (data: any) => {
     const type = typeLinkSelected.type as string;
 
-    console.log(data[type]);
 
-    // console.log(objverifyType)
 
-    // console.log(objverifyType.filter(
-    //   (elemento) => elemento.type == typeLinkSelected.type
-    // )[0])
-
-    console.log(data);
-    console.log(typeLinkSelected.type);
 
     const setNewType = await objverifyType.filter(
       (elemento) => elemento.type == typeLinkSelected.type
     )[0];
 
-    console.log(setNewType.verify);
 
     try {
       await setNewType.verify.validate(data, {
@@ -133,18 +115,15 @@ function ModalCreateLink({
         };
       }
 
-      // console.log(objCreateLink)
 
       mutateCreateLink(objCreateLink);
     } catch (err) {
       let validationErrors: erros = {};
 
       if (err instanceof yup.ValidationError) {
-        console.log(err);
         err.inner.forEach((error) => {
           let path = error.path as string;
           validationErrors[path] = error.message;
-          console.log(path);
         });
 
         formRef.current.setErrors(validationErrors);
@@ -183,14 +162,14 @@ function ModalCreateLink({
   return (
     <div className="w-full  h-[90%] flex justify-center items-center p-2">
       <Form ref={formRef} onSubmit={handleFormSubmit}>
-        <div className="w-[350px] h-[350px] bg-[#d3cada84] rounded-xl flex flex-col items-center p-2">
-          <span className="text-[20px] text-[black]">
+        <div className="w-[350px] h-[350px] bg-[#d3cada84] dark:bg-zinc-800 rounded-xl flex flex-col items-center p-2">
+          <span className="text-[20px] text-zinc-900 dark:text-zinc-100">
             {typeLinkSelected.titulo}
           </span>
 
           {typeLinkSelected.type === "Link" ? (
             <div className="text-[15px] font-semibold w-[100%] flex flex-col justify-center items-center  mt-2">
-              <span className="text-[12px] text-[black] font-semibold   flex justify-center items-center  ">
+              <span className="text-[12px] text-zinc-800 dark:text-zinc-200 font-semibold   flex justify-center items-center  ">
                 Titulo
               </span>
               <div className="text-[12px] font-semibold w-full   flex  ">
@@ -201,14 +180,14 @@ function ModalCreateLink({
 
           {typeLinkSelected.type! !== "Link" && (
             <div className="text-[15px] font-semibold w-[100%] flex justify-center items-center ">
-              <span className="text-[12px] text-[#0000009e] font-semibold w-[300px]  flex justify-center items-center ">
+              <span className="text-[12px] text-[#0000009e] dark:text-zinc-400 font-semibold w-[300px]  flex justify-center items-center ">
                 {typeLinkSelected.texto}
               </span>
             </div>
           )}
 
           <div className="text-[15px] font-semibold w-[100%] flex flex-col justify-center items-center  mt-2">
-            <span className="text-[12px] text-[black] font-semibold   flex justify-center items-center ">
+            <span className="text-[12px] text-zinc-800 dark:text-zinc-200 font-semibold   flex justify-center items-center ">
               {`URL do ${typeLinkSelected.type}`}
             </span>
           </div>
