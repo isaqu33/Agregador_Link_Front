@@ -7,9 +7,11 @@ auth, variáveis e armadilhas.
 
 ## Regras de trabalho
 
-- **`docs/` é idêntica nos dois repositórios.** Ao alterar qualquer doc (ou algo que ele descreva: rota, proxy, variável,
-  fluxo), atualize `docs/` aqui e copie para `../Agregador_Link_api/docs/` (`cp docs/*.md ../Agregador_Link_api/docs/`).
-  Avise o usuário para commitar nos dois repos.
+- **Docs sempre em dia, nos dois projetos.** Toda mudança que afete o que `docs/` descreve (rota, proxy, variável,
+  fluxo, tela, componente, estrutura de pastas) **exige** atualizar `docs/` **na mesma tarefa**, sem esperar o usuário
+  pedir, e depois sincronizar os dois repositórios: `cp docs/*.md ../Agregador_Link_api/docs/`. Antes de dar a tarefa por
+  concluída, confira que `diff -rq docs ../Agregador_Link_api/docs` não mostra diferença.
+- **`docs/` e `CLAUDE.md` não vão para o git** (estão no `.gitignore` dos dois repos). Não os adicione a commits.
 - O navegador **nunca** fala direto com a API nem guarda o token: tudo passa por `/api/backend/...`
   (`app/api/backend/[...path]/route.ts`, com lista branca). Rota nova da API usada pelo front = adicionar lá.
 - Não commite `.env`. Não faça commit nem push sem o usuário pedir.
