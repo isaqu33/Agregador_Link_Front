@@ -25,7 +25,9 @@ Precisa do backend no ar antes (a rede `agregador-network` é criada por ele).
 - `app/[id]/page.tsx` — página pública do perfil.
 - `src/Shell.tsx` — casca da área logada (nav, preview do celular, sair). Era o antigo `App.tsx`.
 - `src/views/` — telas (Login, Links, Appearance, PerfilId, Preview). **Não** chame de `pages/`: o Next trataria como rotas.
-- `src/componentes/` — componentes de UI. `SocialMediaLink.tsx` faz recorte e upload da foto.
+- `src/componentes/` — componentes de UI. `SocialMediaLink.tsx` faz recorte e upload da foto. `PhoneMockup.tsx` é a prévia
+  estática (HTML/Tailwind, sem dados) de uma página FaceLink num celular, usada ao lado do formulário em `Login.tsx`
+  (só em telas > 916px).
 - `src/server/api.tsx` — hook `useApi` (axios com `baseURL: '/api/backend'`, sem token no cliente).
 - `src/componentes/SimpleLink.tsx` — lista de links com arrastar e soltar (`@dnd-kit`); reordena de forma otimista no cache
   do `ME_KEY` e desfaz se a API recusar.
