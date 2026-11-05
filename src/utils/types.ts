@@ -37,9 +37,14 @@ export interface CreateLink {
 
 
     name: string;
-    link: string;
+    link?: string;
     type: string;
 
+}
+
+export interface Social {
+    network: string;
+    url: string;
 }
 
 export interface User {
@@ -51,7 +56,10 @@ export interface User {
     photoURL?: string;
     template?: string;
     title?: string;
-    about?: string
+    about?: string;
+    username?: string;
+    socials?: Social[];
+    emailVerified?: boolean;
 }
 
 export interface UserCACH {
@@ -78,6 +86,9 @@ export interface dataToPreviue{
     template?: string;
     about?:string;
     title?: string;
+    username?: string;
+    socials?: Social[];
+    emailVerified?: boolean;
 }
 
 export interface CreateConviteType {
@@ -110,3 +121,13 @@ export type TemesType = {
     color9: string;
     id: number
 };
+
+
+export interface AnalyticsSummary {
+    days: number;
+    views: number;
+    clicks: number;
+    ctr: number;
+    daily: { day: string; views: number; clicks: number }[];
+    links: { id: string; name: string; clicks: number }[];
+}

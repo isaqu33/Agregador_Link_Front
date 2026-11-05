@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#0369a1"/></linearGradient></defs>
+<rect width="256" height="256" fill="url(#g)"/>
+<path d="M36 256c0-52 40-78 92-78s92 26 92 78z" fill="#fecaca"/>
+<rect x="110" y="160" width="36" height="30" rx="12" fill="#c68642"/>
+<ellipse cx="128" cy="122" rx="48" ry="54" fill="#c68642"/>
+<circle cx="128" cy="44" r="20" fill="#facc15"/><path d="M80 110c0-34 22-54 48-54s48 20 48 54c-12-18-28-24-48-24s-36 6-48 24z" fill="#facc15"/>
+
+<circle cx="106" cy="122" r="5" fill="#1f2937"/><circle cx="150" cy="122" r="5" fill="#1f2937"/>
+
+<path d="M112 148q16 14 32 0" stroke="#7c2d12" stroke-width="5" fill="none" stroke-linecap="round"/>
+</svg>

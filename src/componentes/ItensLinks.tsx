@@ -91,7 +91,7 @@ function ItensLinks({ link, idlink }: ItensLinksProps) {
         <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
           {link?.name}
         </p>
-        {tamanhoTela >= 590 ? (
+        {tamanhoTela >= 590 && link?.type !== "Cabecalho" ? (
           <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">{link?.link}</p>
         ) : null}
       </div>

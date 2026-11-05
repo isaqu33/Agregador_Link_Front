@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CreateLink, User } from "../utils/types";
+import { AnalyticsSummary, CreateLink, User } from "../utils/types";
 
 // The browser never holds the API token: requests go through the Next.js proxy
 // (app/api/backend), which adds it from the Auth.js session cookie.
@@ -75,7 +75,23 @@ function useApi() {
     return data.url;
   };
 
+  const forgotPassword = async (email: string) => (await api.post("/auth/forgot-password", { email })).data;
+  const resetPassword = async (token: string, password: string) =>
+    (await api.post("/auth/reset-password", { token, password })).data;
+  const verifyEmail = async (token: string) => (await api.post("/auth/verify-email", { token })).data;
+  const resendVerification = async () => (await api.post("/auth/resend-verification")).data;
+
+  const getAnalytics = async (days: number) => {
+    const { data } = await api.get<AnalyticsSummary>(`/analytics/summary?days=${days}`);
+    return data;
+  };
+
   return {
+    forgotPassword,
+    resetPassword,
+    verifyEmail,
+    resendVerification,
+    getAnalytics,
     editProfile,
     getMe,
     CreateNewLink,

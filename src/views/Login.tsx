@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import LogoApp from "../componentes/logoApp";
@@ -95,6 +96,12 @@ export default function Login() {
               maxLength={72}
               autoComplete={mode === "login" ? "current-password" : "new-password"}
             />
+
+            {mode === "login" && (
+              <Link href="/forgot-password" className="self-end -mt-1 mb-3 text-[13px] text-violet-700 dark:text-violet-300 hover:underline">
+                Esqueci minha senha
+              </Link>
+            )}
 
             {error && <p className="text-red-600 text-[13px] mb-3">{error}</p>}
 

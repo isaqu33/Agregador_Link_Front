@@ -5,8 +5,18 @@ const apiUrl = process.env.API_INTERNAL_URL ?? 'http://localhost:3070';
 
 // Only these API paths are reachable from the browser. /auth/login is not here on
 // purpose: logging in goes through Auth.js, never straight to the API.
-const PUBLIC_PATHS = [/^auth\/register$/, /^links\/getDataUser\/[^/]+$/];
-const PRIVATE_PATHS = [/^user\/(me|editProfile)$/, /^links\/(addLink|deletLink|editActivet|editLink|reorder)$/, /^media$/];
+const PUBLIC_PATHS = [
+  /^auth\/(register|forgot-password|reset-password|verify-email)$/,
+  /^links\/getDataUser\/[^/]+$/,
+  /^analytics\/(view|click)$/,
+];
+const PRIVATE_PATHS = [
+  /^user\/(me|editProfile)$/,
+  /^links\/(addLink|deletLink|editActivet|editLink|reorder)$/,
+  /^auth\/resend-verification$/,
+  /^analytics\/(summary|stream)$/,
+  /^media$/,
+];
 
 async function proxy(req: NextRequest, { params }: { params: { path: string[] } }) {
   const path = params.path.join('/');
@@ -15,6 +25,9 @@ async function proxy(req: NextRequest, { params }: { params: { path: string[] } 
   if (!isPublic && !isPrivate) return NextResponse.json({ message: 'Not found' }, { status: 404 });
 
   const headers = new Headers();
+  // the API counts visits per visitor: pass the browser IP along
+  const ip = req.headers.get('x-forwarded-for');
+  if (ip) headers.set('x-forwarded-for', ip);
   const contentType = req.headers.get('content-type');
   if (contentType) headers.set('content-type', contentType);
 
@@ -38,11 +51,19 @@ async function proxy(req: NextRequest, { params }: { params: { path: string[] } 
     // @ts-expect-error required by Node's fetch when streaming a request body
     duplex: hasBody ? 'half' : undefined,
     cache: 'no-store',
+    // closes the upstream connection when the browser leaves (matters for the SSE stream)
+    signal: req.signal,
   });
 
   return new NextResponse(upstream.body, {
     status: upstream.status,
-    headers: { 'content-type': upstream.headers.get('content-type') ?? 'application/json' },
+    headers: {
+      'content-type': upstream.headers.get('content-type') ?? 'application/json',
+      // SSE must not be cached or buffered on the way
+      ...(upstream.headers.get('content-type')?.startsWith('text/event-stream')
+        ? { 'cache-control': 'no-cache, no-transform', 'x-accel-buffering': 'no' }
+        : {}),
+    },
   });
 }
 

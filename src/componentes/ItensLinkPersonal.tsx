@@ -19,9 +19,10 @@ interface ItensLinksProps {
   formato?: string;
   idlink?: string;
   formatoBase?: any;
+  compact?: boolean; // visual reduzido, usado na pré-visualização
 }
 
-function ItensLinkPersonal({ link, formato, formatoBase }: ItensLinksProps) {
+function ItensLinkPersonal({ link, formato, formatoBase, compact }: ItensLinksProps) {
   const [typeIcon, setTypeIcon] = useState<any>();
 
 
@@ -36,7 +37,9 @@ function ItensLinkPersonal({ link, formato, formatoBase }: ItensLinksProps) {
   return (
     <div
       style={{ borderRadius: `${formato == "" ? formatoBase  : formato} ` }}
-      className="w-full bg-[#ffffffb8] h-[60px]  text-[#4c1d95] rounded-[50px]   mb-2  flex justify-center items-center hover:bg-slate-200"
+      className={`w-full bg-[#ffffffb8] text-[#4c1d95] rounded-[50px] flex justify-center items-center hover:bg-slate-200 ${
+        compact ? "h-11 mb-3 text-[13px] font-medium" : "h-[60px] mb-2"
+      }`}
     >
       <a
         href={`${link?.link}`}

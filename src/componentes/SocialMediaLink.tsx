@@ -26,6 +26,7 @@ import { useDebounceEffect } from "../useDebounceEffect";
 import "react-image-crop/dist/ReactCrop.css";
 
 const imgfeliz = "/assets/feliz.png";
+const AVATARES = Array.from({ length: 12 }, (_, i) => `/assets/avatars/avatar-${String(i + 1).padStart(2, "0")}.svg`);
 import useApi from "../server/api";
 import useMe, { ME_KEY } from "../hooks/useMe";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -40,7 +41,7 @@ function centerAspectCrop(
     makeAspectCrop(
       {
         unit: "%",
-        width: 50,
+        width: 80,
       },
       aspect,
       mediaWidth,
@@ -67,7 +68,7 @@ function SocialMediaLink() {
 
   const [scale, setScale] = useState(1);
   const [rotate, setRotate] = useState(0);
-  const [aspect, setAspect] = useState<number | undefined>(16 / 9);
+  const [aspect, setAspect] = useState<number | undefined>(1);
 
   const [file, setFile] = useState<any>();
 
@@ -87,6 +88,7 @@ function SocialMediaLink() {
       
         setshowLouder(false)
       },
+      onError: () => setshowLouder(false),
     }
   );
 
@@ -106,7 +108,16 @@ function SocialMediaLink() {
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     if (aspect) {
       const { width, height } = e.currentTarget;
-      setCrop(centerAspectCrop(width, height, aspect));
+      const inicial = centerAspectCrop(width, height, aspect);
+      setCrop(inicial);
+      // o recorte inicial já vale para salvar, mesmo sem o usuário mexer
+      setCompletedCrop({
+        unit: "px",
+        x: (inicial.x / 100) * width,
+        y: (inicial.y / 100) * height,
+        width: (inicial.width / 100) * width,
+        height: (inicial.height / 100) * height,
+      });
     }
   }
 
@@ -183,57 +194,78 @@ function SocialMediaLink() {
       </div>
 
       {!imgSrc ? (
-        <div className="w-[120px] mb-3 h-[120px] rounded-[20px] flex items-center justify-center  overflow-hidden">
-          {me?.photoURL ? (
+        <div className="flex flex-col items-center gap-5 mt-2">
+          <div className="w-[120px] h-[120px] rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-800 ring-4 ring-violet-500/30">
             <img
-              src={me?.photoURL}
-              alt="imagem"
-              className="min-w-full h-[70%] rounded-[12px]"
+              src={me?.photoURL || imgfeliz}
+              alt="Foto de perfil"
+              className="w-full h-full object-cover"
             />
-          ) : (
-            <img
-              src={imgfeliz}
-              alt="imagem"
-              className="w-full min-h[100%] rounded-[50px]"
-            />
-          )}
-        </div>
-      ) : null}
-
-      <div>
-        {!imgSrc ? (
-          <div className="bg-violet-800 cursor-pointer w-[130px] h-8 flex items-center justify-center rounded-[10px] hover:bg-violet-600">
-            <form>
-              <label htmlFor="InputImg" tabIndex={0}>
-                <input
-                  className="hidden"
-                  type="file"
-                  accept="image/*"
-                  id="InputImg"
-                  onChange={onSelectFile}
-                />
-                <span className="cursor-pointer flex justify-center items-center   text-sm hover:bg-violet-600">
-                  {`${me?.photoURL ? "Editar" : "Carregar"} Avatar`}
-                </span>
-              </label>
-            </form>
           </div>
-        ) : null}
-      </div>
-      {!!imgSrc && (
-        <div className="w-full flex flex-col items-center justify-center flex-1 rounded-[20px] max-w-[400px] ">
-          <div className="w-[250px] ">
+
+          <label
+            htmlFor="InputImg"
+            tabIndex={0}
+            className="cursor-pointer h-10 px-5 inline-flex items-center justify-center rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium transition-colors"
+          >
+            <input
+              className="hidden"
+              type="file"
+              accept="image/*"
+              id="InputImg"
+              onChange={onSelectFile}
+            />
+            {me?.photoURL ? "Enviar outra foto" : "Enviar uma foto"}
+          </label>
+
+          <div className="w-full max-w-[400px] flex flex-col items-center">
+            <div className="w-full flex items-center gap-3 mb-4">
+              <span className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800" />
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">ou escolha um avatar</span>
+              <span className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800" />
+            </div>
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+              {AVATARES.map((src, i) => {
+                const atual = me?.photoURL === src;
+                return (
+                  <button
+                    key={src}
+                    type="button"
+                    aria-label={`Usar avatar ${i + 1}`}
+                    aria-pressed={atual}
+                    disabled={atual}
+                    onClick={() => {
+                      setshowLouder(true);
+                      mutateChangePhotoProfile(src);
+                    }}
+                    className={`w-14 h-14 rounded-full overflow-hidden transition-transform hover:scale-105 outline-none focus-visible:ring-2 focus-visible:ring-violet-500 ${
+                      atual ? "ring-4 ring-violet-500" : "ring-1 ring-zinc-200 dark:ring-zinc-700"
+                    }`}
+                  >
+                    <img src={src} alt="" className="w-full h-full object-cover" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full flex flex-col items-center max-w-[400px]">
+          <div className="w-full flex justify-center rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 p-3">
             <ReactCrop
               crop={crop}
               onChange={(_, percentCrop) => setCrop(percentCrop)}
               onComplete={(c) => setCompletedCrop(c)}
               aspect={aspect}
-              className="w-[100%] h-[250px]"
+              circularCrop
+              keepSelection
+              minWidth={60}
+              minHeight={60}
             >
               <img
-                className="w-[100%] min-h-full"
+                className="max-w-full max-h-[320px] block"
                 ref={imgRef}
-                alt="Crop me"
+                alt="Recortar foto"
                 src={imgSrc}
                 style={{ transform: `scale(${scale}) rotate(${rotate}deg)` }}
                 onLoad={onImageLoad}
@@ -241,25 +273,26 @@ function SocialMediaLink() {
             </ReactCrop>
           </div>
 
-          <div className="w-full  flex items-center justify-center flex-col ">
-            <span className=" text-[5px] text-[black] ">{file.name}</span>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-3">
+            Arraste e ajuste o círculo para escolher o enquadramento.
+          </p>
 
-            <div className="w-full rounded-[20px]  flex items-center justify-around ">
-              <button
-                className="w-[120px]  hover:bg-violet-400 bg-[#4c1d95] rounded-[10px] p-4 h-[40px] flex items-center justify-center outline-none"
-                onClick={() => {
-                  saveonServerImgSaved();
-                  setshowLouder(true)
-                }}
-              >
-                Salvar
-              </button>
-              <button className="w-[120px]  hover:bg-violet-400 bg-[#4c1d95] rounded-[10px] p-4 h-[40px] flex items-center justify-center outline-none"
-              onClick={()=>{setImgSrc("")}}
-              >
-                Cancelar
-              </button>
-            </div>
+          <div className="w-full flex items-center justify-center gap-3 mt-5">
+            <button
+              className="h-10 px-6 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium transition-colors outline-none"
+              onClick={() => {
+                saveonServerImgSaved();
+                setshowLouder(true);
+              }}
+            >
+              Salvar
+            </button>
+            <button
+              className="h-10 px-6 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm font-medium transition-colors outline-none"
+              onClick={() => setImgSrc("")}
+            >
+              Cancelar
+            </button>
           </div>
         </div>
       )}
