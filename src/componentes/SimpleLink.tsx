@@ -124,6 +124,8 @@ function SimpleLink() {
       AppState.incrementCounter("");
       AppState.incrementFormato("");
       AppState.incrementcorFundo("");
+      AppState.incrementFonte("");
+      AppState.incrementBotao("");
 
 
       

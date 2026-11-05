@@ -19,23 +19,16 @@ import { useMutation, useQueryClient } from "react-query";
 import { ME_KEY } from "../hooks/useMe";
 import useApi from "../server/api";
 import { link } from "../utils/types";
+import { montarLink, tipoPorNome, valorDoLink } from "../utils/objectstoberendered";
 
 interface ModalEditarProp {
   dataLink: link;
 }
 
-// mesma regra da API: só http/https
-function urlValida(valor: string) {
-  try {
-    const { protocol } = new URL(valor);
-    return protocol === "http:" || protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
 function ModalEditar({ dataLink }: ModalEditarProp) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const tipo = tipoPorNome(dataLink.type);
+  const semUrl = tipo?.campo === "nenhum";
   const { editLink } = useApi();
   const client = useQueryClient();
 
@@ -44,7 +37,7 @@ function ModalEditar({ dataLink }: ModalEditarProp) {
   const [erros, setErros] = useState<{ nome?: string; url?: string; geral?: string }>({});
 
   const { mutate, isLoading } = useMutation(
-    () => editLink({ id: dataLink.id as string, name: nome.trim(), link: url.trim() }),
+    (link: string) => editLink({ id: dataLink.id as string, name: nome.trim(), ...(semUrl ? {} : { link }) }),
     {
       onSuccess: async () => {
         await client.invalidateQueries(ME_KEY);
@@ -56,7 +49,7 @@ function ModalEditar({ dataLink }: ModalEditarProp) {
 
   function abrir() {
     setNome(dataLink.name ?? "");
-    setUrl(dataLink.link ?? "");
+    setUrl(valorDoLink(tipo, dataLink.link));
     setErros({});
     onOpen();
   }
@@ -66,11 +59,16 @@ function ModalEditar({ dataLink }: ModalEditarProp) {
 
     const novos: typeof erros = {};
     if (!nome.trim()) novos.nome = "Informe um título";
-    if (!urlValida(url.trim())) novos.url = "Informe uma URL válida (começando com http:// ou https://)";
+    let link = "";
+    if (!semUrl) {
+      const r = montarLink(tipo ?? { campo: "url" } as any, url);
+      if (r.erro) novos.url = r.erro;
+      link = r.link;
+    }
     setErros(novos);
     if (Object.keys(novos).length) return;
 
-    mutate();
+    mutate(link);
   }
 
   return (
@@ -96,16 +94,20 @@ function ModalEditar({ dataLink }: ModalEditarProp) {
               <FormErrorMessage>{erros.nome}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={!!erros.url}>
-              <FormLabel fontSize="sm">Link</FormLabel>
-              <Input
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                maxLength={2000}
-                placeholder="https://"
-              />
-              <FormErrorMessage>{erros.url}</FormErrorMessage>
-            </FormControl>
+            {!semUrl && (
+              <FormControl isInvalid={!!erros.url}>
+                <FormLabel fontSize="sm">
+                  {tipo?.campo === "email" ? "E-mail" : tipo?.campo === "telefone" || tipo?.campo === "whatsapp" ? "Número" : "Link"}
+                </FormLabel>
+                <Input
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  maxLength={2000}
+                  placeholder={tipo?.placeholder ?? "https://"}
+                />
+                <FormErrorMessage>{erros.url}</FormErrorMessage>
+              </FormControl>
+            )}
 
             {erros.geral && <p className="text-red-600 text-sm mt-3">{erros.geral}</p>}
           </ModalBody>

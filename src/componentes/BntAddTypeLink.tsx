@@ -59,7 +59,7 @@ export default function BntAddTypeLink({
                     >
                       <div className="w-full flex items-center gap-3">
                         <item.Icon color={"#7c3aed"} size={20} />
-                        <span>{item.name}</span>
+                        <span>{item.rotulo}</span>
                       </div>
                     </Listbox.Option>
                   ))}

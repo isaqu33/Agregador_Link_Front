@@ -1,232 +1,130 @@
-import React, { MutableRefObject, ReactElement, useRef, useState } from "react";
-import {
-  schemaFormLinkType,
-  schemaFormSemailType,
-  schemaFormSpotifyType,
-  schemaFormtwitchType,
-  schemaFormwhatsappType,
-  schemaFormyoutubeType,
-} from "../utils/schemas";
-import { CreateLink, erros } from "../utils/types";
-import * as yup from "yup";
-
-import { Form } from "@unform/web";
-import Input from "./Input";
-import { FormHandles } from "@unform/core";
+import { FormEvent, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import useApi from "../server/api";
 import { ME_KEY } from "../hooks/useMe";
-
-interface setingModalState {
-  type: string;
-  titulo: string;
-  texto: string;
-  formatolink: string;
-}
+import { CreateLink } from "../utils/types";
+import { montarLink, tipoPorNome } from "../utils/objectstoberendered";
 
 interface ModalCreateLinkProp {
   cancelModal: (item: any) => any;
-  typeLinkSelected: setingModalState;
+  typeLinkSelected: { type: string; titulo: string; texto: string; formatolink: string };
   clinTypeSelected: (item: string) => any;
 }
 
-function ModalCreateLink({
-  cancelModal,
-  typeLinkSelected,
-  clinTypeSelected,
-}: ModalCreateLinkProp) {
+const inputClass =
+  "w-full h-11 rounded-lg px-3 text-sm text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-500/30 transition";
+
+function ModalCreateLink({ cancelModal, typeLinkSelected, clinTypeSelected }: ModalCreateLinkProp) {
   const { CreateNewLink } = useApi();
   const client = useQueryClient();
+  const tipo = tipoPorNome(typeLinkSelected.type);
 
+  const [titulo, setTitulo] = useState("");
+  const [valor, setValor] = useState("");
+  const [erros, setErros] = useState<{ titulo?: string; valor?: string; geral?: string }>({});
 
-  const { mutate: mutateCreateLink } = useMutation(
-    (data: CreateLink) => CreateNewLink(data),
-    {
-      onSuccess: (sus) => {
-        client.invalidateQueries(ME_KEY);
-        clinTypeSelected("");
-        cancelModal(false);
-      },
-    }
-  );
-
-  const formRef = useRef() as MutableRefObject<FormHandles>;
-
-  const objverifyType = [
-    {
-      type: "Link",
-      verify: schemaFormLinkType,
-    },
-    {
-      type: "Spotify",
-      verify: schemaFormSpotifyType,
-    },
-    {
-      type: "Youtube",
-      verify: schemaFormyoutubeType,
-    },
-    {
-      type: "Whatsapp",
-      verify: schemaFormwhatsappType,
-    },
-    {
-      type: "Twitch",
-      verify: schemaFormtwitchType,
-    },
-    {
-      type: "Email",
-      verify: schemaFormSemailType,
-    },
-  ];
-
-  const handleFormSubmit = async (data: any) => {
-    const type = typeLinkSelected.type as string;
-
-
-
-
-    const setNewType = await objverifyType.filter(
-      (elemento) => elemento.type == typeLinkSelected.type
-    )[0];
-
-
-    try {
-      await setNewType.verify.validate(data, {
-        abortEarly: false,
-      });
-
-      let objCreateLink = {
-        name: "",
-        link: "",
-        type: "",
-      };
-
-      if (typeLinkSelected.type == "Link") {
-        objCreateLink = {
-          name: data.titulo,
-          link: data.Link,
-          type: typeLinkSelected.type,
-        };
-      } else {
-        objCreateLink = {
-          name: typeLinkSelected.type,
-          link: data[type],
-          type: typeLinkSelected.type,
-        };
-      }
-
-
-      mutateCreateLink(objCreateLink);
-    } catch (err) {
-      let validationErrors: erros = {};
-
-      if (err instanceof yup.ValidationError) {
-        err.inner.forEach((error) => {
-          let path = error.path as string;
-          validationErrors[path] = error.message;
-        });
-
-        formRef.current.setErrors(validationErrors);
-      }
-    }
+  const fechar = () => {
+    cancelModal(false);
+    clinTypeSelected("");
   };
 
-  const [erroInput, seterroInput] = useState<string[]>([]);
+  const { mutate, isLoading } = useMutation((data: CreateLink) => CreateNewLink(data), {
+    onSuccess: async () => {
+      await client.invalidateQueries(ME_KEY);
+      fechar();
+    },
+    onError: () => setErros({ geral: "Não foi possível adicionar. Confira os dados e tente de novo." }),
+  });
 
-  // const veryfyInputAndSend = async (data: any) => {
-  //   console.log("test data:  ", data);
-  //   try {
-  //     //Validando Data, se invalida irá pro catch
-  //     await schemaFormCreateConvite.validate(data, {
-  //       abortEarly: false,
-  //     });
+  function enviar(e: FormEvent) {
+    e.preventDefault();
+    if (!tipo) return;
 
-  //     data.local = data.local.map((item: any) => JSON.stringify(item));
-  //     console.log(data);
-  //     mutate(data);
-  //   } catch (err) {
-  //     let validationErrors: erros = {};
+    const novos: typeof erros = {};
+    const nome = titulo.trim() || (tipo.tituloObrigatorio ? "" : tipo.rotulo);
+    if (!nome) novos.titulo = "Informe um título";
 
-  //     if (err instanceof yup.ValidationError) {
-  //       console.log(err);
-  //       err.inner.forEach((error) => {
-  //         let path = error.path as string;
-  //         validationErrors[path] = error.message;
-  //       });
+    let link = "";
+    if (tipo.campo !== "nenhum") {
+      const resultado = montarLink(tipo, valor);
+      if (resultado.erro) novos.valor = resultado.erro;
+      link = resultado.link;
+    }
+    setErros(novos);
+    if (Object.keys(novos).length) return;
 
-  //       formRef.current.setErrors(validationErrors);
-  //     }
-  //   }
-  // };
+    mutate({ name: nome, link, type: tipo.name });
+  }
+
+  if (!tipo) return null;
 
   return (
-    <div className="w-full  h-[90%] flex justify-center items-center p-2">
-      <Form ref={formRef} onSubmit={handleFormSubmit}>
-        <div className="w-[350px] h-[350px] bg-[#d3cada84] dark:bg-zinc-800 rounded-xl flex flex-col items-center p-2">
-          <span className="text-[20px] text-zinc-900 dark:text-zinc-100">
-            {typeLinkSelected.titulo}
+    <div className="w-full flex justify-center py-2">
+      <form onSubmit={enviar} noValidate className="w-full max-w-[420px] flex flex-col gap-4">
+        <div className="flex items-center gap-3">
+          <span className="w-10 h-10 shrink-0 bg-violet-600 rounded-lg flex justify-center items-center">
+            <tipo.Icon color="#ffffff" size={20} />
           </span>
-
-          {typeLinkSelected.type === "Link" ? (
-            <div className="text-[15px] font-semibold w-[100%] flex flex-col justify-center items-center  mt-2">
-              <span className="text-[12px] text-zinc-800 dark:text-zinc-200 font-semibold   flex justify-center items-center  ">
-                Titulo
-              </span>
-              <div className="text-[12px] font-semibold w-full   flex  ">
-                <Input name="titulo" placeholder={""}></Input>
-              </div>
-            </div>
-          ) : null}
-
-          {typeLinkSelected.type! !== "Link" && (
-            <div className="text-[15px] font-semibold w-[100%] flex justify-center items-center ">
-              <span className="text-[12px] text-[#0000009e] dark:text-zinc-400 font-semibold w-[300px]  flex justify-center items-center ">
-                {typeLinkSelected.texto}
-              </span>
-            </div>
-          )}
-
-          <div className="text-[15px] font-semibold w-[100%] flex flex-col justify-center items-center  mt-2">
-            <span className="text-[12px] text-zinc-800 dark:text-zinc-200 font-semibold   flex justify-center items-center ">
-              {`URL do ${typeLinkSelected.type}`}
-            </span>
-          </div>
-
-          {/* <div className="text-[15px] font-semibold w-[100%] flex justify-center items-center  mt-2  bg-black"> */}
-          <div className="text-[12px] font-semibold w-full   flex  ">
-            <Input
-              name={typeLinkSelected.type}
-              placeholder={typeLinkSelected.formatolink}
-            ></Input>
-          </div>
-          {/* </div> */}
-
-          <div className=" w-full  mt-2 flex-1 flex items-center justify-around">
-            <button
-              onClick={() => {
-                cancelModal(false);
-                clinTypeSelected("");
-              }}
-              className="text-[12px] font-semibold w-[100px] bg-orange-600 flex justify-center items-center rounded-xl"
-            >
-              Cancelar
-            </button>
-
-            <button
-              type="submit"
-              className="text-[12px] font-semibold w-[100px] bg-[#4c1d95] flex justify-center items-center rounded-xl"
-            >
-              Adicionar
-            </button>
+          <div>
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 leading-tight">
+              {typeLinkSelected.titulo}
+            </h2>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">{typeLinkSelected.texto}</p>
           </div>
         </div>
-      </Form>
-    </div>
 
-    // <form onSubmit={(e)=>veryfyInputAndSend(e)}>
-    //   <input type="text" name="cjsdcjkdcsjk"/>
-    //   <button type='submit'>scfsvfd</button>
-    // </form>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            Título{tipo.tituloObrigatorio ? "" : " (opcional)"}
+          </span>
+          <input
+            className={inputClass}
+            value={titulo}
+            onChange={(e) => setTitulo(e.target.value)}
+            maxLength={100}
+            placeholder={tipo.tituloObrigatorio ? "" : tipo.rotulo}
+            autoFocus
+          />
+          {erros.titulo && <span className="text-red-600 text-xs">{erros.titulo}</span>}
+        </label>
+
+        {tipo.campo !== "nenhum" && (
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              {tipo.campo === "email" ? "E-mail" : tipo.campo === "url" ? "URL" : "Número"}
+            </span>
+            <input
+              className={inputClass}
+              value={valor}
+              onChange={(e) => setValor(e.target.value)}
+              maxLength={2000}
+              placeholder={tipo.placeholder}
+              inputMode={tipo.campo === "telefone" || tipo.campo === "whatsapp" ? "tel" : undefined}
+            />
+            {erros.valor && <span className="text-red-600 text-xs">{erros.valor}</span>}
+          </label>
+        )}
+
+        {erros.geral && <p className="text-red-600 text-sm">{erros.geral}</p>}
+
+        <div className="flex justify-end gap-3 pt-1">
+          <button
+            type="button"
+            onClick={fechar}
+            className="h-10 px-5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm font-medium transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="h-10 px-5 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium transition-colors disabled:opacity-60"
+          >
+            {isLoading ? "Adicionando..." : "Adicionar"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 
