@@ -15,14 +15,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: { email: {}, password: {} },
-      authorize: async (credentials) => {
+      authorize: async (credentials, request) => {
         const email = typeof credentials?.email === 'string' ? credentials.email : '';
         const password = typeof credentials?.password === 'string' ? credentials.password : '';
         if (!email || !password) return null;
 
         const response = await fetch(`${apiUrl}/auth/login`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            // the API rate-limits per visitor IP; without this every login would look like it comes from the Next server
+            ...(request?.headers?.get('x-forwarded-for')
+              ? { 'x-forwarded-for': request.headers.get('x-forwarded-for') as string }
+              : {}),
+          },
           body: JSON.stringify({ email, password }),
         });
         if (!response.ok) return null;
