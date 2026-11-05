@@ -12,7 +12,18 @@ export interface PerfilPublico {
   title?: string | null;
   about?: string | null;
   socials?: { network: string; url: string }[];
-  links?: { id?: string; name?: string; link?: string; type?: string; isActivit?: boolean }[];
+  pixels?: { meta?: string; ga?: string };
+  links?: {
+    id?: string;
+    name?: string;
+    link?: string;
+    type?: string;
+    isActivit?: boolean;
+    thumbnail?: string | null;
+    featured?: boolean;
+    embedUrl?: string | null;
+    locked?: boolean;
+  }[];
 }
 
 // Busca no servidor (SSR). `cache` evita pedir duas vezes (metadata + página).

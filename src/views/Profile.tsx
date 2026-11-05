@@ -5,6 +5,9 @@ import useMe, { ME_KEY } from "../hooks/useMe";
 import useApi from "../server/api";
 import { REDES, redePorId, urlHttpValida } from "../utils/objectstoberendered";
 import { Social } from "../utils/types";
+import QRCode from "qrcode";
+import QrCode from "../componentes/QrCode";
+import ShareButton from "../componentes/ShareButton";
 
 const MAX_REDES = 8;
 const inputClass =
@@ -30,11 +33,18 @@ export default function Profile() {
   const [erroRedes, setErroRedes] = useState("");
   const [okUser, setOkUser] = useState(false);
   const [okRedes, setOkRedes] = useState(false);
+  const [meta, setMeta] = useState("");
+  const [ga, setGa] = useState("");
+  const [erroPixels, setErroPixels] = useState("");
+  const [okPixels, setOkPixels] = useState(false);
+  const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {
     setUsername(me?.username ?? "");
     setRedes(me?.socials ?? []);
-  }, [me?.username, me?.socials]);
+    setMeta(me?.pixels?.meta ?? "");
+    setGa(me?.pixels?.ga ?? "");
+  }, [me?.username, me?.socials, me?.pixels?.meta, me?.pixels?.ga]);
 
   const salvarUser = useMutation((u: string) => editProfile({ username: u }), {
     onSuccess: async () => {
@@ -51,6 +61,25 @@ export default function Profile() {
     },
     onError: (err) => setErroRedes(mensagemDaApi(err, "Não foi possível salvar as redes.")),
   });
+
+  const salvarPixels = useMutation((p: { meta: string; ga: string }) => editProfile({ pixels: p }), {
+    onSuccess: async () => {
+      await client.invalidateQueries(ME_KEY);
+      setOkPixels(true);
+    },
+    onError: (err) => setErroPixels(mensagemDaApi(err, "Não foi possível salvar os pixels.")),
+  });
+
+  function enviarPixels(e: FormEvent) {
+    e.preventDefault();
+    setOkPixels(false);
+    const m = meta.trim();
+    const g = ga.trim().toUpperCase();
+    if (m && !/^\d{5,20}$/.test(m)) return setErroPixels("Meta Pixel: apenas números (5 a 20 dígitos).");
+    if (g && !/^G-[A-Z0-9]{4,15}$/.test(g)) return setErroPixels("Google Analytics: use o formato G-XXXXXXXXXX.");
+    setErroPixels("");
+    salvarPixels.mutate({ meta: m, ga: g });
+  }
 
   function enviarUser(e: FormEvent) {
     e.preventDefault();
@@ -85,6 +114,31 @@ export default function Profile() {
     setRedes((lista) => lista.map((r, idx) => (idx === i ? { ...r, ...parcial } : r)));
 
   const origem = typeof window !== "undefined" ? window.location.origin : "";
+  const urlPublica = `${origem}${me?.username ? `/@${me.username}` : me?.id ? `/${me.id}` : ""}`;
+
+  async function copiar() {
+    try {
+      await navigator.clipboard.writeText(urlPublica);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch {}
+  }
+
+  function baixar(nome: string, href: string) {
+    const a = document.createElement("a");
+    a.href = href;
+    a.download = nome;
+    a.click();
+  }
+  async function baixarPng() {
+    baixar("qrcode-facelink.png", await QRCode.toDataURL(urlPublica, { width: 1024, margin: 2, errorCorrectionLevel: "M" }));
+  }
+  async function baixarSvg() {
+    const svg = await QRCode.toString(urlPublica, { type: "svg", margin: 2, errorCorrectionLevel: "M" });
+    const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+    baixar("qrcode-facelink.svg", url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 
   return (
     <div className="flex flex-col min-h-[560px] gap-10">
@@ -187,6 +241,54 @@ export default function Profile() {
             <button type="submit" className={botaoPrimario} disabled={salvarRedes.isLoading}>
               {salvarRedes.isLoading ? "Salvando..." : "Salvar redes"}
             </button>
+          </div>
+        </form>
+      </section>
+
+      <section className="border-t border-zinc-100 dark:border-zinc-800 pt-8">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Compartilhar</h2>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Divulgue o endereço da sua página ou imprima o QR Code.</p>
+
+        <div className="mt-4 flex flex-col sm:flex-row gap-5 items-start">
+          <QrCode texto={urlPublica} tamanho={168} className="ring-1 ring-zinc-200 dark:ring-zinc-700 shrink-0" />
+          <div className="flex flex-col gap-3 min-w-0 w-full">
+            <code className="text-sm bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-lg px-3 py-2.5 break-all">{urlPublica}</code>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={copiar} className={botaoPrimario}>{copiado ? "Copiado!" : "Copiar endereço"}</button>
+              <span className="relative">
+                <ShareButton
+                  url={urlPublica}
+                  titulo={me?.title ?? me?.name}
+                  className="h-10 px-4 flex items-center gap-2 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                />
+              </span>
+              <button type="button" onClick={baixarPng} className="h-10 px-4 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">Baixar PNG</button>
+              <button type="button" onClick={baixarSvg} className="h-10 px-4 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">Baixar SVG</button>
+            </div>
+            {!me?.username && <p className="text-xs text-amber-600 dark:text-amber-400">Escolha um nome de usuário acima para ter um endereço curto (/@usuario) e um QR Code mais simples.</p>}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-zinc-100 dark:border-zinc-800 pt-8">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Pixels de rastreamento</h2>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          Meça os visitantes da sua página no Meta (Facebook/Instagram) e no Google Analytics. Os scripts só carregam na página pública.
+          Informe aos visitantes que a página usa rastreamento (LGPD).
+        </p>
+        <form onSubmit={enviarPixels} className="mt-4 flex flex-col gap-3" noValidate>
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Meta Pixel ID</span>
+            <input className={inputClass} value={meta} onChange={(e) => { setMeta(e.target.value); setOkPixels(false); }} placeholder="Somente números, ex.: 1234567890" inputMode="numeric" maxLength={20} />
+          </label>
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Google Analytics (ID de medição)</span>
+            <input className={inputClass} value={ga} onChange={(e) => { setGa(e.target.value); setOkPixels(false); }} placeholder="G-XXXXXXXXXX" maxLength={15} />
+          </label>
+          {erroPixels && <p className="text-red-600 text-sm">{erroPixels}</p>}
+          {okPixels && <p className="text-emerald-600 text-sm">Pixels salvos!</p>}
+          <div className="flex justify-end">
+            <button type="submit" className={botaoPrimario} disabled={salvarPixels.isLoading}>{salvarPixels.isLoading ? "Salvando..." : "Salvar pixels"}</button>
           </div>
         </form>
       </section>

@@ -7,6 +7,7 @@ const img = "/assets/pixeltruewebdesign.png";
 import {
   ArrowSquareOut,
   ChartBar,
+  EnvelopeSimple,
   Eye,
   HouseSimple,
   Link as IconLink,
@@ -20,6 +21,7 @@ import ThemeToggle from "./componentes/ThemeToggle";
 import useMe from "./hooks/useMe";
 import useApi from "./server/api";
 import Loader, { PreviewSkeleton } from "./componentes/Loader";
+import PaginaSeletor from "./componentes/PaginaSeletor";
 
 import { useQueryClient } from "react-query";
 import Preview from "./views/Preview";
@@ -70,6 +72,11 @@ const Shell = observer(({ children }: { children: React.ReactNode }) => {
       Nome: "Perfil",
       rota: "/costumer/profile",
       icon: <UserCircle size={18} />,
+    },
+    {
+      Nome: "Contatos",
+      rota: "/costumer/leads",
+      icon: <EnvelopeSimple size={18} />,
     },
     {
       Nome: "Analytics",
@@ -152,6 +159,7 @@ const Shell = observer(({ children }: { children: React.ReactNode }) => {
 
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-6 flex gap-8 items-start justify-center">
         <main className="w-full max-w-[760px] min-w-0">
+          <PaginaSeletor />
           <nav className="flex gap-1 mb-4 p-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl w-fit max-w-full overflow-x-auto">
             {NavLink.map((item) => {
               const ativo =

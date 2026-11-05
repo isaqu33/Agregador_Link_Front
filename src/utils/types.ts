@@ -14,6 +14,25 @@ export interface erros {
 
 
 
+// extras de um link (null limpa o campo ao editar)
+export interface LinkOptions {
+    thumbnail?: string | null;
+    featured?: boolean;
+    startAt?: string | null;
+    endAt?: string | null;
+    embed?: boolean;
+    password?: string;
+    removePassword?: boolean;
+}
+
+export interface Lead {
+    id: string;
+    email: string;
+    name?: string | null;
+    form: string;
+    createdAt: string;
+}
+
 export interface link {
 
     id?: string;
@@ -22,7 +41,14 @@ export interface link {
     type?: string;
     userId?: string;
     isActivit?: boolean;
-    order?: number
+    order?: number;
+    thumbnail?: string | null;
+    featured?: boolean;
+    startAt?: string | null;
+    endAt?: string | null;
+    embed?: boolean;
+    embedUrl?: string | null;
+    locked?: boolean
 
 
 
@@ -33,13 +59,21 @@ export interface typeNewArrayIcom {
     Icon: (props: any) => JSX.Element;
 }
 
-export interface CreateLink {
-
-
+export interface CreateLink extends LinkOptions {
     name: string;
     link?: string;
     type: string;
+}
 
+export interface Pixels {
+    meta?: string;
+    ga?: string;
+}
+
+export interface PageInfo {
+    id: string;
+    name: string;
+    username?: string;
 }
 
 export interface Social {
@@ -60,6 +94,8 @@ export interface User {
     username?: string;
     socials?: Social[];
     emailVerified?: boolean;
+    pixels?: Pixels;
+    pages?: PageInfo[];
 }
 
 export interface UserCACH {
@@ -89,6 +125,8 @@ export interface dataToPreviue{
     username?: string;
     socials?: Social[];
     emailVerified?: boolean;
+    pixels?: Pixels;
+    pages?: PageInfo[];
 }
 
 export interface CreateConviteType {
@@ -124,6 +162,8 @@ export type TemesType = {
 
 
 export interface AnalyticsSummary {
+    devices: { device: string; views: number }[];
+    referrers: { host: string; views: number }[];
     days: number;
     views: number;
     clicks: number;

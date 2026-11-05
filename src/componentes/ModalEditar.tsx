@@ -20,6 +20,7 @@ import { ME_KEY } from "../hooks/useMe";
 import useApi from "../server/api";
 import { link } from "../utils/types";
 import { montarLink, tipoPorNome, valorDoLink } from "../utils/objectstoberendered";
+import OpcoesLink, { opcoesIniciais, opcoesParaApi, OpcoesState, validarOpcoes } from "./OpcoesLink";
 
 interface ModalEditarProp {
   dataLink: link;
@@ -34,10 +35,17 @@ function ModalEditar({ dataLink }: ModalEditarProp) {
 
   const [nome, setNome] = useState("");
   const [url, setUrl] = useState("");
+  const [opcoes, setOpcoes] = useState<OpcoesState>(opcoesIniciais(dataLink));
   const [erros, setErros] = useState<{ nome?: string; url?: string; geral?: string }>({});
 
   const { mutate, isLoading } = useMutation(
-    (link: string) => editLink({ id: dataLink.id as string, name: nome.trim(), ...(semUrl ? {} : { link }) }),
+    (link: string) =>
+      editLink({
+        id: dataLink.id as string,
+        name: nome.trim(),
+        ...(semUrl ? {} : { link }),
+        ...(tipo?.name === "Cabecalho" ? {} : opcoesParaApi(opcoes, true)),
+      }),
     {
       onSuccess: async () => {
         await client.invalidateQueries(ME_KEY);
@@ -50,6 +58,7 @@ function ModalEditar({ dataLink }: ModalEditarProp) {
   function abrir() {
     setNome(dataLink.name ?? "");
     setUrl(valorDoLink(tipo, dataLink.link));
+    setOpcoes(opcoesIniciais(dataLink));
     setErros({});
     onOpen();
   }
@@ -65,6 +74,8 @@ function ModalEditar({ dataLink }: ModalEditarProp) {
       if (r.erro) novos.url = r.erro;
       link = r.link;
     }
+    const erroOpcoes = tipo?.name === "Cabecalho" ? null : validarOpcoes(opcoes);
+    if (erroOpcoes) novos.geral = erroOpcoes;
     setErros(novos);
     if (Object.keys(novos).length) return;
 
@@ -108,6 +119,10 @@ function ModalEditar({ dataLink }: ModalEditarProp) {
                 <FormErrorMessage>{erros.url}</FormErrorMessage>
               </FormControl>
             )}
+
+            <div className="mt-4">
+              <OpcoesLink tipo={dataLink.type ?? "Link"} value={opcoes} onChange={setOpcoes} podeEmbed={dataLink.type === "Youtube" || dataLink.type === "Spotify"} />
+            </div>
 
             {erros.geral && <p className="text-red-600 text-sm mt-3">{erros.geral}</p>}
           </ModalBody>

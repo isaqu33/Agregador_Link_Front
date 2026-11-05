@@ -1,6 +1,8 @@
 import {
   EnvelopeSimple,
   Globe,
+  Heart,
+  EnvelopeOpen,
   InstagramLogo,
   LinkBreak,
   Phone,
@@ -17,7 +19,7 @@ import {
 } from "phosphor-react";
 
 // "url": http(s) | "email": vira mailto: | "telefone": vira tel:+ | "whatsapp": número vira wa.me | "nenhum": só título
-export type Campo = "url" | "email" | "telefone" | "whatsapp" | "nenhum";
+export type Campo = "url" | "email" | "telefone" | "whatsapp" | "pix" | "nenhum";
 
 export interface TipoLink {
   name: string; // valor gravado em Link.type (a API valida a mesma lista)
@@ -52,6 +54,28 @@ export const TIPOS_LINK: TipoLink[] = [
     tituloModal: "Adicionar um cabeçalho",
     texto: "Um título para separar grupos de links na sua página.",
     placeholder: "",
+    unavailable: false,
+  },
+  {
+    name: "Newsletter",
+    rotulo: "Captura de e-mail",
+    Icon: (p) => <EnvelopeOpen {...p} />,
+    campo: "nenhum",
+    tituloObrigatorio: true,
+    tituloModal: "Adicionar captura de e-mail",
+    texto: "Um formulário na sua página para os visitantes deixarem o e-mail. Os contatos aparecem na aba Contatos.",
+    placeholder: "",
+    unavailable: false,
+  },
+  {
+    name: "Pix",
+    rotulo: "Gorjeta (Pix)",
+    Icon: (p) => <Heart {...p} />,
+    campo: "pix",
+    tituloObrigatorio: false,
+    tituloModal: "Adicionar gorjeta (Pix)",
+    texto: "Informe sua chave Pix ou o código \"copia e cola\". O visitante copia a chave (e vê o QR Code, se for copia e cola).",
+    placeholder: "chave Pix ou código copia e cola",
     unavailable: false,
   },
   {
@@ -187,6 +211,10 @@ export function montarLink(tipo: TipoLink, valor: string): { link: string; erro?
   switch (tipo.campo) {
     case "nenhum":
       return { link: "" };
+    case "pix":
+      return v.length >= 1 && v.length <= 600 && !/[\u0000-\u001f]/.test(v)
+        ? { link: v }
+        : { link: "", erro: "Informe a chave Pix (até 600 caracteres)" };
     case "email":
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
         ? { link: `mailto:${v}` }
