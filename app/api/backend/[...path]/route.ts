@@ -7,21 +7,28 @@ const apiUrl = process.env.API_INTERNAL_URL ?? 'http://localhost:3070';
 // purpose: logging in goes through Auth.js, never straight to the API.
 const PUBLIC_PATHS = [
   /^auth\/(register|forgot-password|reset-password|verify-email)$/,
-  /^links\/getDataUser\/[^/]+$/,
+  /^links\/(getDataUser\/[^/]+|unlock)$/,
   /^analytics\/(view|click)$/,
 ];
+// same path, different rules by method: POST /leads is the public e-mail form, GET /leads is the owner's list
+const PUBLIC_POST_ONLY = [/^leads$/];
 const PRIVATE_PATHS = [
   /^user\/(me|editProfile)$/,
   /^links\/(addLink|deletLink|editActivet|editLink|reorder)$/,
   /^auth\/resend-verification$/,
-  /^analytics\/(summary|stream)$/,
+  /^analytics\/(summary|stream|export)$/,
+  /^pages\/(create|edit|delete|[a-f0-9]{24})$/,
+  /^leads(\/(export|delete))?$/,
   /^media$/,
 ];
 
 async function proxy(req: NextRequest, { params }: { params: { path: string[] } }) {
   const path = params.path.join('/');
-  const isPublic = PUBLIC_PATHS.some((re) => re.test(path));
-  const isPrivate = PRIVATE_PATHS.some((re) => re.test(path));
+  const isPublic =
+    PUBLIC_PATHS.some((re) => re.test(path)) ||
+    (req.method === 'POST' && PUBLIC_POST_ONLY.some((re) => re.test(path)));
+  // a request that matched a public rule (POST /leads) never also demands a session
+  const isPrivate = !isPublic && PRIVATE_PATHS.some((re) => re.test(path));
   if (!isPublic && !isPrivate) return NextResponse.json({ message: 'Not found' }, { status: 404 });
 
   const headers = new Headers();
@@ -59,6 +66,10 @@ async function proxy(req: NextRequest, { params }: { params: { path: string[] } 
     status: upstream.status,
     headers: {
       'content-type': upstream.headers.get('content-type') ?? 'application/json',
+      // CSV exports are downloads
+      ...(upstream.headers.get('content-disposition')
+        ? { 'content-disposition': upstream.headers.get('content-disposition') as string }
+        : {}),
       // SSE must not be cached or buffered on the way
       ...(upstream.headers.get('content-type')?.startsWith('text/event-stream')
         ? { 'cache-control': 'no-cache, no-transform', 'x-accel-buffering': 'no' }

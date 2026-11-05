@@ -18,7 +18,8 @@ import { Listbox, Transition } from "@headlessui/react";
 import SocialMediaLink from "./SocialMediaLink";
 import BntAddTypeLink from "./BntAddTypeLink";
 import ImgNoLinks from "./ImgNoLinks";
-import useMe, { ME_KEY } from "../hooks/useMe";
+import useMe, { ME_KEY, pageKey } from "../hooks/useMe";
+import { usePageContext } from "../contexts/PageContext";
 import useApi from "../server/api";
 import { useMutation, useQueryClient } from "react-query";
 import {
@@ -50,13 +51,15 @@ function SimpleLink() {
 
   const { reorderLinks } = useApi();
   const client = useQueryClient();
+  const { pageId } = usePageContext();
+  const chave: any = pageKey(pageId); // cache da página aberta (principal ou extra)
 
   // atualiza a lista na hora (otimista) e desfaz se a API recusar
   const { mutate: reordenar } = useMutation((ids: string[]) => reorderLinks(ids), {
     onMutate: async (ids) => {
-      await client.cancelQueries(ME_KEY);
-      const anterior = client.getQueryData<any>(ME_KEY);
-      client.setQueryData<any>(ME_KEY, (old: any) => {
+      await client.cancelQueries(chave);
+      const anterior = client.getQueryData<any>(chave);
+      client.setQueryData<any>(chave, (old: any) => {
         if (!old) return old;
         const porId = new Map<string, any>(old.data.links.map((l: any) => [l.id, l]));
         const ordenados = ids.map((id) => porId.get(id)).filter(Boolean);
@@ -65,7 +68,7 @@ function SimpleLink() {
       return { anterior };
     },
     onError: (_err, _ids, ctx) => {
-      if (ctx?.anterior) client.setQueryData(ME_KEY, ctx.anterior);
+      if (ctx?.anterior) client.setQueryData(chave, ctx.anterior);
     },
     onSettled: () => client.invalidateQueries(ME_KEY),
   });

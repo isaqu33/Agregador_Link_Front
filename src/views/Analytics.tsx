@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
-import { ArrowsClockwise } from "phosphor-react";
+import { ArrowsClockwise, DownloadSimple } from "phosphor-react";
+import { usePageContext } from "../contexts/PageContext";
 import useApi from "../server/api";
 import { Spinner } from "../componentes/Loader";
 
@@ -16,14 +17,54 @@ function Cartao({ titulo, valor, nota }: { titulo: string; valor: string; nota?:
   );
 }
 
+const botaoExportar =
+  "flex items-center gap-1.5 h-9 px-3 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors";
+
+const NOMES_DISPOSITIVO: Record<string, string> = { mobile: "Celular", tablet: "Tablet", desktop: "Computador", desconhecido: "Não identificado" };
+const CORES_DISPOSITIVO = ["#8b5cf6", "#10b981", "#f59e0b", "#94a3b8"];
+
+// rosca em SVG: cada fatia é um traço do círculo (sem biblioteca de gráficos)
+function Dispositivos({ itens }: { itens: { device: string; views: number }[] }) {
+  const total = itens.reduce((t, i) => t + i.views, 0);
+  if (total === 0) return <p className="text-sm text-zinc-500 dark:text-zinc-400">Sem dados ainda.</p>;
+  const R = 40;
+  const C = 2 * Math.PI * R;
+  let acumulado = 0;
+
+  return (
+    <div className="flex items-center gap-5">
+      <svg viewBox="0 0 100 100" width="112" height="112" role="img" aria-label="Visitas por dispositivo" className="shrink-0 -rotate-90">
+        {itens.map((i, idx) => {
+          const parte = (i.views / total) * C;
+          const el = (
+            <circle key={i.device} cx="50" cy="50" r={R} fill="none" strokeWidth="16" stroke={CORES_DISPOSITIVO[idx % CORES_DISPOSITIVO.length]} strokeDasharray={`${parte} ${C - parte}`} strokeDashoffset={-acumulado} />
+          );
+          acumulado += parte;
+          return el;
+        })}
+      </svg>
+      <ul className="flex flex-col gap-1.5 text-sm">
+        {itens.map((i, idx) => (
+          <li key={i.device} className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200">
+            <i className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: CORES_DISPOSITIVO[idx % CORES_DISPOSITIVO.length] }} />
+            {NOMES_DISPOSITIVO[i.device] ?? i.device}
+            <span className="text-zinc-500 dark:text-zinc-400 tabular-nums">{Math.round((i.views / total) * 100)}%</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 const formatarDia = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
 
 export default function Analytics() {
-  const { getAnalytics } = useApi();
+  const { getAnalytics, exportUrl } = useApi();
+  const { pageId } = usePageContext();
   const [dias, setDias] = useState(30);
   const client = useQueryClient();
   const { data, isLoading, isError, isFetching, refetch, dataUpdatedAt } = useQuery(
-    ["analytics", dias],
+    ["analytics", dias, pageId],
     () => getAnalytics(dias),
     { staleTime: 30 * 1000 }
   );
@@ -162,6 +203,43 @@ export default function Analytics() {
                 ))}
               </ul>
             )}
+          </section>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-8">
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3">Dispositivos</h2>
+              <Dispositivos itens={data.devices} />
+            </section>
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3">De onde vêm as visitas</h2>
+              {data.referrers.length === 0 ? (
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">Sem dados ainda.</p>
+              ) : (
+                <ul className="flex flex-col gap-2.5">
+                  {data.referrers.map((r) => (
+                    <li key={r.host}>
+                      <div className="flex justify-between text-sm text-zinc-800 dark:text-zinc-200 mb-1">
+                        <span className="truncate pr-3">{r.host === "direto" ? "Direto / sem origem" : r.host}</span>
+                        <span className="font-medium tabular-nums">{r.views}</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                        <div className="h-full rounded-full bg-violet-500" style={{ width: `${(r.views / Math.max(1, data.referrers[0].views)) * 100}%` }} />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          </div>
+
+          <section className="mt-8 flex flex-wrap items-center gap-2">
+            <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mr-2">Exportar ({data.days} dias)</span>
+            <a href={exportUrl("analytics/export", `days=${dias}&kind=daily`)} className={botaoExportar}>
+              <DownloadSimple size={16} /> Visitas e cliques por dia
+            </a>
+            <a href={exportUrl("analytics/export", `days=${dias}&kind=links`)} className={botaoExportar}>
+              <DownloadSimple size={16} /> Cliques por link
+            </a>
           </section>
         </>
       )}

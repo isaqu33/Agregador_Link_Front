@@ -18,6 +18,14 @@ Este repositório é o **front** (Next.js). A API fica em
 |---|---|
 | ![Analytics](screenshots/analytics-escuro.png) | <img src="screenshots/pagina-publica.png" width="260" alt="Página pública"> |
 
+| Opções avançadas do link | Analytics completo |
+|---|---|
+| ![Opções do link](screenshots/opcoes-do-link.png) | ![Analytics completo](screenshots/analytics-completo.png) |
+
+| Compartilhar, QR Code e pixels | Link com senha e gorjeta (Pix) |
+|---|---|
+| ![Compartilhar](screenshots/perfil-compartilhar.png) | <img src="screenshots/publica-senha.png" width="190" alt="Link com senha"> <img src="screenshots/publica-pix.png" width="190" alt="Gorjeta Pix"> |
+
 > As capturas usam uma conta fictícia ("Maria Souza") e avatares prontos do próprio projeto.
 
 ## O que o produto faz
@@ -25,22 +33,30 @@ Este repositório é o **front** (Next.js). A API fica em
 **Página pública** (`/@usuario` ou `/:id`)
 - Renderizada **no servidor** (SSR), com título, descrição, Open Graph, Twitter Card e URL canônica por perfil.
 - Avatar, título, descrição, **ícones de redes sociais no topo**, cabeçalhos de seção e botões de link.
-- 10 tipos de link: Link, Cabeçalho, Instagram, TikTok, WhatsApp (número vira `wa.me`), Telefone (`tel:`),
-  E-mail (`mailto:`), YouTube, Spotify e Twitch.
-- Cada visita e cada clique são contados.
+- 12 tipos de link: Link, Cabeçalho, **Captura de e-mail**, **Gorjeta (Pix)**, Instagram, TikTok, WhatsApp (número vira
+  `wa.me`), Telefone (`tel:`), E-mail (`mailto:`), YouTube, Spotify e Twitch.
+- **Miniatura**, **destaque** (maior, com banner), **agendamento** (aparece/some em datas), **player** do YouTube/Spotify
+  na própria página e **senha por link** (o endereço real só chega depois de digitar a senha).
+- Formulário de **captura de e-mail** (com armadilha anti-robô) e botão **Pix** (copiar chave; QR Code se for "copia e cola").
+- Botão **compartilhar** (menu do celular ou copiar endereço) e **pixels** Meta/Google Analytics.
+- **Várias páginas por conta:** cada página extra tem endereço, aparência, links, contatos e estatísticas próprios.
+- Cada visita e cada clique são contados (dispositivo e origem da visita incluídos).
 
 **Painel** (`/costumer`, exige login)
 - **Links:** criar, editar, ativar/desativar, excluir e **reordenar arrastando**.
 - **Aparência:** 6 temas prontos, fundo (cor sólida ou gradiente), 4 fontes, 3 estilos de botão (preenchido, contorno,
   sombra) e 3 formatos. A prévia no celular reage na hora; só salva em "Atualizar".
-- **Perfil:** nome de usuário único (`/@usuario`) e até 8 redes sociais.
+- **Perfil:** nome de usuário único (`/@usuario`), até 8 redes sociais, **QR Code** (baixa PNG/SVG), compartilhar e pixels.
+- **Páginas:** seletor no topo para alternar entre a página principal e até 5 páginas extras (criar/excluir).
+- **Contatos:** e-mails coletados pelos formulários, com remoção e **exportação CSV**.
 - **Foto:** upload com recorte quadrado (guia circular) ou galeria de 12 avatares prontos.
-- **Analytics:** visitas, cliques, taxa de cliques, gráfico por dia e cliques por link (7, 30 ou 90 dias), **atualizado
-  ao vivo** por SSE e com botão "Atualizar".
+- **Analytics:** visitas, cliques, taxa de cliques, gráfico por dia, cliques por link, **dispositivos** e **origens** das
+  visitas (7, 30 ou 90 dias), **atualizado ao vivo** por SSE, botão "Atualizar" e **exportação CSV**.
 - Tema claro/escuro, aviso de e-mail não confirmado e carregamento com spinner/esqueleto.
 
 **Conta**
 - Cadastro e login por e-mail e senha, **recuperação de senha** e **confirmação de e-mail** por link de uso único.
+- **Login com Google** (opcional; liga com `AUTH_GOOGLE_*` no `.env`).
 
 ## Arquitetura
 
@@ -92,7 +108,7 @@ docker compose -f docker-compose.dev.yml exec api npm run seed   # cria o primei
 
 # 2) Front
 cd ../Agregador_Link_Front
-cp .env.example .env            # defina AUTH_SECRET (openssl rand -hex 32)
+cp .env.example .env            # defina AUTH_SECRET (openssl rand -hex 32); Google é opcional
 docker compose -f docker-compose.dev.yml up -d --build -V
 ```
 
@@ -111,7 +127,8 @@ Sem SMTP configurado, os e-mails de confirmação e de recuperação de senha **
 | `/costumer` | links |
 | `/costumer/appearance` | aparência |
 | `/costumer/profile` | nome de usuário e redes sociais |
-| `/costumer/analytics` | visitas e cliques |
+| `/costumer/leads` | contatos coletados |
+| `/costumer/analytics` | visitas, cliques, dispositivos e origens |
 | `/@usuario` · `/:id` | página pública (SSR) |
 
 `/@usuario` é uma reescrita (`next.config.mjs`) para `app/u/[username]`.
@@ -151,6 +168,8 @@ O front ainda não tem testes automatizados; a lógica testada (auth, links, ana
 ## Segurança
 
 - Token da API nunca no navegador; cookie de sessão criptografado, expira em 24 h.
+- O destino de um link com senha não vai no HTML nem no JSON da página pública; só a API o devolve após a senha.
+- Pixels: só IDs no formato esperado entram na página (nada digitado vira código); players só de `youtube-nocookie.com` e `open.spotify.com`, em `iframe` com `sandbox`.
 - Proxy com lista branca: rota nova da API usada pelo front precisa ser liberada em `app/api/backend/[...path]/route.ts`.
 - Rotas privadas validam a sessão no servidor antes de repassar; o `/costumer` redireciona para `/login` sem sessão.
 - Links só `http(s)`, `mailto:` e `tel:` (validados na API); o front acrescenta `rel="noopener noreferrer"`.
@@ -158,8 +177,10 @@ O front ainda não tem testes automatizados; a lógica testada (auth, links, ana
 
 ## Roadmap
 
-Feito: editar e reordenar links, 10 tipos de link, redes no topo, `/@usuario`, SSR + SEO, analytics (com tempo real),
-temas/fontes/botões, recuperar senha e confirmar e-mail.
+Feito: editar e reordenar links, 12 tipos de link, redes no topo, `/@usuario`, SSR + SEO, analytics (com tempo real,
+dispositivos, origens e CSV), temas/fontes/botões, recuperar senha e confirmar e-mail, miniaturas, destaque,
+agendamento, player, QR Code, compartilhar, coleta de e-mail, login com Google, pixels, exportação, gorjeta (Pix),
+senha por link e várias páginas.
 
-Próximo: QR Code e compartilhar, miniaturas e destaque de links, agendamento, embeds (YouTube/Spotify), coleta de
-e-mail dos visitantes, login com Google, origem/dispositivo nas analytics.
+Pendências: país nas analytics (exige base de GeoIP), banner de consentimento para os pixels, testes automatizados do
+front e teste do login com Google com credenciais reais.

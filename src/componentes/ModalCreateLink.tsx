@@ -4,6 +4,7 @@ import useApi from "../server/api";
 import { ME_KEY } from "../hooks/useMe";
 import { CreateLink } from "../utils/types";
 import { montarLink, tipoPorNome } from "../utils/objectstoberendered";
+import OpcoesLink, { opcoesIniciais, opcoesParaApi, OpcoesState, validarOpcoes } from "./OpcoesLink";
 
 interface ModalCreateLinkProp {
   cancelModal: (item: any) => any;
@@ -21,6 +22,7 @@ function ModalCreateLink({ cancelModal, typeLinkSelected, clinTypeSelected }: Mo
 
   const [titulo, setTitulo] = useState("");
   const [valor, setValor] = useState("");
+  const [opcoes, setOpcoes] = useState<OpcoesState>(opcoesIniciais());
   const [erros, setErros] = useState<{ titulo?: string; valor?: string; geral?: string }>({});
 
   const fechar = () => {
@@ -50,10 +52,12 @@ function ModalCreateLink({ cancelModal, typeLinkSelected, clinTypeSelected }: Mo
       if (resultado.erro) novos.valor = resultado.erro;
       link = resultado.link;
     }
+    const erroOpcoes = tipo.name === "Cabecalho" ? null : validarOpcoes(opcoes);
+    if (erroOpcoes) novos.geral = erroOpcoes;
     setErros(novos);
     if (Object.keys(novos).length) return;
 
-    mutate({ name: nome, link, type: tipo.name });
+    mutate({ name: nome, link, type: tipo.name, ...(tipo.name === "Cabecalho" ? {} : opcoesParaApi(opcoes, false)) });
   }
 
   if (!tipo) return null;
@@ -91,7 +95,7 @@ function ModalCreateLink({ cancelModal, typeLinkSelected, clinTypeSelected }: Mo
         {tipo.campo !== "nenhum" && (
           <label className="flex flex-col gap-1.5">
             <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              {tipo.campo === "email" ? "E-mail" : tipo.campo === "url" ? "URL" : "Número"}
+              {tipo.campo === "email" ? "E-mail" : tipo.campo === "url" ? "URL" : tipo.campo === "pix" ? "Chave Pix" : "Número"}
             </span>
             <input
               className={inputClass}
@@ -104,6 +108,8 @@ function ModalCreateLink({ cancelModal, typeLinkSelected, clinTypeSelected }: Mo
             {erros.valor && <span className="text-red-600 text-xs">{erros.valor}</span>}
           </label>
         )}
+
+        <OpcoesLink tipo={tipo.name} value={opcoes} onChange={setOpcoes} podeEmbed={tipo.name === "Youtube" || tipo.name === "Spotify"} />
 
         {erros.geral && <p className="text-red-600 text-sm">{erros.geral}</p>}
 

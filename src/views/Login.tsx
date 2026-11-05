@@ -8,7 +8,7 @@ import ThemeToggle from "../componentes/ThemeToggle";
 import screenSize from "../hooks/screenSize";
 import useApi from "../server/api";
 
-export default function Login() {
+export default function Login({ googleEnabled = false }: { googleEnabled?: boolean }) {
   const router = useRouter();
   const tamanhoTela = screenSize();
   const { registerUser } = useApi();
@@ -64,6 +64,24 @@ export default function Login() {
         <div className="w-full max-w-[400px] flex flex-col bg-white dark:bg-zinc-900 rounded-2xl p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm">
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Bem-vindo!</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 mb-6">{mode === "login" ? "Entre na sua conta para continuar." : "Crie sua conta em poucos segundos."}</p>
+
+          {googleEnabled && (
+            <>
+              <button
+                type="button"
+                onClick={() => signIn("google", { callbackUrl: "/costumer" })}
+                className="w-full h-11 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-100 text-sm font-medium flex items-center justify-center gap-2 transition-colors"
+              >
+                <img src="/assets/google.png" alt="" width={18} height={18} />
+                Continuar com Google
+              </button>
+              <div className="flex items-center gap-3 my-4 text-xs text-zinc-400">
+                <span className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800" />
+                ou
+                <span className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800" />
+              </div>
+            </>
+          )}
 
           <form onSubmit={handleSubmit} className="flex flex-col">
             {mode === "register" && (
