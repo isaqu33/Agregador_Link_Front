@@ -20,7 +20,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@headlessui/react": "^1.6.5",
+    "@headlessui/react": "^2.2.10",
     "@unform/core": "^2.1.6",
     "@unform/web": "^2.1.6",
     "axios": "^1.2.1",
