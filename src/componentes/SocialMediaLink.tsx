@@ -196,11 +196,13 @@ function SocialMediaLink() {
       {!imgSrc ? (
         <div className="flex flex-col items-center gap-5 mt-2">
           <div className="w-[120px] h-[120px] rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-800 ring-4 ring-violet-500/30">
-            <img
-              src={me?.photoURL || imgfeliz}
-              alt="Foto de perfil"
-              className="w-full h-full object-cover"
-            />
+            {me?.photoURL ? (
+              <img src={me.photoURL} alt="Foto de perfil" className="w-full h-full object-cover" />
+            ) : (
+              <span aria-hidden className="w-full h-full flex items-center justify-center text-4xl font-semibold text-violet-700 dark:text-violet-300 bg-violet-100 dark:bg-violet-500/20 select-none">
+                {(me?.title || me?.name || "?").trim().charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
 
           <label

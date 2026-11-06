@@ -1,10 +1,13 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import ClientOnly from '../../src/componentes/ClientOnly';
 import Loader from '../../src/componentes/Loader';
-
-const Tela = dynamic(() => import('../../src/views/ResetPassword'), { ssr: false, loading: () => <Loader fullScreen /> });
+import ResetPassword from '../../src/views/ResetPassword';
 
 export default function Page({ searchParams }: { searchParams: { token?: string } }) {
-  return <Tela token={searchParams.token ?? ''} />;
+  return (
+    <ClientOnly fallback={<Loader fullScreen />}>
+      <ResetPassword token={searchParams.token ?? ''} />
+    </ClientOnly>
+  );
 }

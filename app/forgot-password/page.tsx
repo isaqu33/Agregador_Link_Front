@@ -1,10 +1,13 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import ClientOnly from '../../src/componentes/ClientOnly';
 import Loader from '../../src/componentes/Loader';
-
-const Tela = dynamic(() => import('../../src/views/ForgotPassword'), { ssr: false, loading: () => <Loader fullScreen /> });
+import ForgotPassword from '../../src/views/ForgotPassword';
 
 export default function Page() {
-  return <Tela />;
+  return (
+    <ClientOnly fallback={<Loader fullScreen />}>
+      <ForgotPassword />
+    </ClientOnly>
+  );
 }

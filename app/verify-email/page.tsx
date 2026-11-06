@@ -1,10 +1,13 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import ClientOnly from '../../src/componentes/ClientOnly';
 import Loader from '../../src/componentes/Loader';
-
-const Tela = dynamic(() => import('../../src/views/VerifyEmail'), { ssr: false, loading: () => <Loader fullScreen /> });
+import VerifyEmail from '../../src/views/VerifyEmail';
 
 export default function Page({ searchParams }: { searchParams: { token?: string } }) {
-  return <Tela token={searchParams.token ?? ''} />;
+  return (
+    <ClientOnly fallback={<Loader fullScreen />}>
+      <VerifyEmail token={searchParams.token ?? ''} />
+    </ClientOnly>
+  );
 }

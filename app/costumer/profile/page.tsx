@@ -1,10 +1,13 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import ClientOnly from '../../../src/componentes/ClientOnly';
 import Loader from '../../../src/componentes/Loader';
-
-const Profile = dynamic(() => import('../../../src/views/Profile'), { ssr: false, loading: () => <Loader /> });
+import Profile from '../../../src/views/Profile';
 
 export default function Page() {
-  return <Profile />;
+  return (
+    <ClientOnly fallback={<Loader />}>
+      <Profile />
+    </ClientOnly>
+  );
 }

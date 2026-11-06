@@ -49,6 +49,8 @@ function dentroDoPrazo(l: LinkPublico) {
   return true;
 }
 
+const FUNDO_PADRAO = "linear-gradient(160deg, #7c3aed 0%, #4c1d95 60%, #312e81 100%)";
+
 const externo = (url: string) => /^https?:/i.test(url);
 
 function registrarClique(linkId?: string) {
@@ -66,12 +68,15 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
   const [bloqueado, setBloqueado] = useState<LinkPublico | null>(null);
   const [pix, setPix] = useState<LinkPublico | null>(null);
 
-  const fundoImagem = estilo.cor.includes("linear") ? estilo.cor : undefined;
-  const fundoCor = estilo.cor && !fundoImagem ? estilo.cor : undefined;
+  // sem cor escolhida: o mesmo degradê roxo do resto do produto (antes era um cinza liso)
+  const cor = estilo.cor || FUNDO_PADRAO;
+  const fundoImagem = cor.includes("linear") ? cor : undefined;
+  const fundoCor = !fundoImagem ? cor : undefined;
   const fonte = FONTES[estilo.fonte]?.className ?? "";
   const raio = estilo.formato || "50px";
   const titulo = dados.title || dados.name;
   const publico = modo === "publico";
+  const visiveis = (dados.links ?? []).filter((l) => l.isActivit !== false && (publico || dentroDoPrazo(l)));
 
   const estiloBotao: Record<string, { cls: string; style?: React.CSSProperties }> = {
     preenchido: { cls: "bg-[#ffffffb8] text-[#4c1d95] hover:bg-white/90" },
@@ -193,13 +198,16 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
           />
         ) : null}
 
-        <div className="w-20 h-20 rounded-full overflow-hidden bg-black ring-4 ring-white/30 shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={dados.photoURL || "/assets/feliz.png"}
-            alt={titulo ? `Foto de ${titulo}` : "Foto de perfil"}
-            className="w-full h-full object-cover"
-          />
+        <div className="w-20 h-20 rounded-full overflow-hidden bg-white/20 ring-4 ring-white/30 shrink-0 flex items-center justify-center">
+          {dados.photoURL ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={dados.photoURL} alt={titulo ? `Foto de ${titulo}` : "Foto de perfil"} className="w-full h-full object-cover" />
+          ) : (
+            // sem foto: inicial do nome (antes aparecia uma carinha que não combinava com o design)
+            <span aria-hidden className="text-3xl font-semibold text-white select-none">
+              {(titulo ?? "?").trim().charAt(0).toUpperCase() || "?"}
+            </span>
+          )}
         </div>
 
         {titulo ? <h1 className="text-lg font-semibold w-full mt-3 text-center break-words">{titulo}</h1> : null}
@@ -229,7 +237,13 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
         ) : null}
 
         <div className="w-full flex flex-col mt-6">
-          {dados.links?.filter((l) => l.isActivit !== false && (publico || dentroDoPrazo(l))).map(renderLink)}
+          {visiveis.map(renderLink)}
+          {visiveis.length === 0 &&
+            (publico ? (
+              <p className="text-center text-sm text-white/70">Ainda não há links por aqui.</p>
+            ) : (
+              <EstadoVazioPrevia />
+            ))}
         </div>
 
         <p className="mt-auto pt-8 text-[11px] text-white/70 font-medium">
@@ -394,5 +408,22 @@ function FormularioEmail({ link, publico, raio, botaoCls, botaoStyle }: { link: 
         </>
       )}
     </form>
+  );
+}
+
+// Prévia do painel sem nenhum link: mostra onde eles vão aparecer
+function EstadoVazioPrevia() {
+  return (
+    <div aria-hidden className="flex flex-col gap-3">
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="h-11 rounded-full border border-dashed border-white/40 bg-white/10 flex items-center justify-center text-[12px] text-white/70"
+          style={{ opacity: 1 - i * 0.3 }}
+        >
+          {i === 0 ? "Seus links aparecem aqui" : ""}
+        </div>
+      ))}
+    </div>
   );
 }

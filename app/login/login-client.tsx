@@ -1,10 +1,14 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import ClientOnly from '../../src/componentes/ClientOnly';
+import Loader from '../../src/componentes/Loader';
+import Login from '../../src/views/Login';
 
-// These screens read window during render, so they only run in the browser.
-const Login = dynamic(() => import('../../src/views/Login'), { ssr: false });
-
+// A tela lê `window` na renderização: só roda no navegador.
 export default function LoginClient({ googleEnabled }: { googleEnabled: boolean }) {
-  return <Login googleEnabled={googleEnabled} />;
+  return (
+    <ClientOnly fallback={<Loader fullScreen />}>
+      <Login googleEnabled={googleEnabled} />
+    </ClientOnly>
+  );
 }

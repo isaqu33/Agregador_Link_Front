@@ -176,7 +176,7 @@ function SimpleLink() {
   ) : (
     <div>
       <BntAddTypeLink onLinktypechanged={setModalCreateLink} />
-      <ImgNoLinks />
+      <ImgNoLinks onEscolher={setModalCreateLink} />
     </div>
   );
 }
