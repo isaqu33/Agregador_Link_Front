@@ -114,20 +114,40 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
 
     if (l.type === "Cabecalho") {
       return (
-        <h2 key={chave} className="w-full text-center text-xs font-semibold uppercase tracking-wider text-white/80 mt-3 mb-3 break-words">
+        <h2
+          key={chave}
+          className="w-full text-center text-xs font-semibold uppercase tracking-wider text-white/80 mt-3 mb-3 break-words"
+        >
           {l.name}
         </h2>
       );
     }
 
     if (l.type === "Newsletter") {
-      return <FormularioEmail key={chave} link={l} publico={publico} raio={raio} botaoCls={botao.cls} botaoStyle={botao.style} />;
+      return (
+        <FormularioEmail
+          key={chave}
+          link={l}
+          publico={publico}
+          raio={raio}
+          botaoCls={botao.cls}
+          botaoStyle={botao.style}
+        />
+      );
     }
 
     if (l.embedUrl) {
-      const altura = l.embedUrl.includes("spotify.com") ? (/\/embed\/(track|episode)\//.test(l.embedUrl) ? 152 : 352) : undefined;
+      const altura = l.embedUrl.includes("spotify.com")
+        ? /\/embed\/(track|episode)\//.test(l.embedUrl)
+          ? 152
+          : 352
+        : undefined;
       return (
-        <div key={chave} className="w-full mb-3 rounded-xl overflow-hidden bg-black/20" style={{ height: altura }}>
+        <div
+          key={chave}
+          className="w-full mb-3 rounded-xl overflow-hidden bg-black/20"
+          style={{ height: altura }}
+        >
           <iframe
             src={l.embedUrl}
             title={l.name ?? "Player"}
@@ -156,7 +176,11 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
           className={`${classeBotao(grande)} mb-3`}
         >
           {conteudo(l, grande)}
-          {l.locked && <span aria-hidden className="absolute right-4 text-xs">🔒</span>}
+          {l.locked && (
+            <span aria-hidden className="absolute right-4 text-xs">
+              🔒
+            </span>
+          )}
         </button>
       );
     }
@@ -168,8 +192,14 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
         target={externo(l.link ?? "") ? "_blank" : undefined}
         rel="noopener noreferrer"
         onClick={publico ? () => registrarClique(l.id) : undefined}
-        style={bannerFeatured ? { borderRadius: `calc(${raio} / 2)`, overflow: "hidden", ...botao.style } : estiloItem}
-        className={bannerFeatured ? `block w-full mb-3 transition-colors ${botao.cls}` : `${classeBotao(grande)} mb-3`}
+        style={
+          bannerFeatured
+            ? { borderRadius: `calc(${raio} / 2)`, overflow: "hidden", ...botao.style }
+            : estiloItem
+        }
+        className={
+          bannerFeatured ? `block w-full mb-3 transition-colors ${botao.cls}` : `${classeBotao(grande)} mb-3`
+        }
       >
         {bannerFeatured ? (
           <>
@@ -189,7 +219,9 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
       className={`w-full flex justify-center bg-slate-600 ${className}`}
       style={{ backgroundColor: fundoCor, backgroundImage: fundoImagem }}
     >
-      <div className={`relative w-full max-w-[500px] min-h-full text-zinc-100 px-5 pt-12 pb-8 flex flex-col items-center ${fonte}`}>
+      <div
+        className={`relative w-full max-w-[500px] min-h-full text-zinc-100 px-5 pt-12 pb-8 flex flex-col items-center ${fonte}`}
+      >
         {publico && urlPublica ? (
           <ShareButton
             url={urlPublica}
@@ -201,7 +233,11 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
         <div className="w-20 h-20 rounded-full overflow-hidden bg-white/20 ring-4 ring-white/30 shrink-0 flex items-center justify-center">
           {dados.photoURL ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={dados.photoURL} alt={titulo ? `Foto de ${titulo}` : "Foto de perfil"} className="w-full h-full object-cover" />
+            <img
+              src={dados.photoURL}
+              alt={titulo ? `Foto de ${titulo}` : "Foto de perfil"}
+              className="w-full h-full object-cover"
+            />
           ) : (
             // sem foto: inicial do nome (antes aparecia uma carinha que não combinava com o design)
             <span aria-hidden className="text-3xl font-semibold text-white select-none">
@@ -210,9 +246,13 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
           )}
         </div>
 
-        {titulo ? <h1 className="text-lg font-semibold w-full mt-3 text-center break-words">{titulo}</h1> : null}
+        {titulo ? (
+          <h1 className="text-lg font-semibold w-full mt-3 text-center break-words">{titulo}</h1>
+        ) : null}
         {dados.about ? (
-          <p className="text-xs text-white/80 mt-1 text-center break-words whitespace-pre-line">{dados.about}</p>
+          <p className="text-xs text-white/80 mt-1 text-center break-words whitespace-pre-line">
+            {dados.about}
+          </p>
         ) : null}
 
         {dados.socials && dados.socials.length > 0 ? (
@@ -264,7 +304,15 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
 }
 
 // ---------- link com senha ----------
-function JanelaSenha({ link, publico, onClose }: { link: LinkPublico; publico: boolean; onClose: () => void }) {
+function JanelaSenha({
+  link,
+  publico,
+  onClose,
+}: {
+  link: LinkPublico;
+  publico: boolean;
+  onClose: () => void;
+}) {
   const { unlockLink } = useApi();
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
@@ -281,7 +329,11 @@ function JanelaSenha({ link, publico, onClose }: { link: LinkPublico; publico: b
       registrarClique(link.id);
       setDestino(url);
     } catch (err: any) {
-      setErro(err?.response?.status === 429 ? "Muitas tentativas. Tente de novo em alguns minutos." : "Senha incorreta.");
+      setErro(
+        err?.response?.status === 429
+          ? "Muitas tentativas. Tente de novo em alguns minutos."
+          : "Senha incorreta."
+      );
     } finally {
       setCarregando(false);
     }
@@ -302,7 +354,9 @@ function JanelaSenha({ link, publico, onClose }: { link: LinkPublico; publico: b
       ) : (
         <form onSubmit={enviar} className="flex flex-col gap-3">
           <p className="text-sm text-zinc-600">
-            {publico ? "Este link é protegido. Digite a senha para abrir." : "Na página pública, quem clicar digita a senha aqui."}
+            {publico
+              ? "Este link é protegido. Digite a senha para abrir."
+              : "Na página pública, quem clicar digita a senha aqui."}
           </p>
           <input
             type="password"
@@ -314,8 +368,16 @@ function JanelaSenha({ link, publico, onClose }: { link: LinkPublico; publico: b
             disabled={!publico}
             className="w-full h-11 rounded-lg px-3 text-sm border border-zinc-300 outline-none focus:border-violet-500"
           />
-          {erro && <p role="alert" className="text-red-600 text-xs">{erro}</p>}
-          <button type="submit" disabled={!publico || carregando || !senha} className="h-11 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-60">
+          {erro && (
+            <p role="alert" className="text-red-600 text-xs">
+              {erro}
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={!publico || carregando || !senha}
+            className="h-11 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-60"
+          >
             {carregando ? "Verificando..." : "Desbloquear"}
           </button>
         </form>
@@ -344,8 +406,14 @@ function JanelaPix({ link, onClose }: { link: LinkPublico; onClose: () => void }
       <div className="flex flex-col items-center gap-3">
         {ehCopiaECola && <QrCode texto={chave} tamanho={200} />}
         <p className="w-full text-xs text-zinc-500">{ehCopiaECola ? "Pix copia e cola" : "Chave Pix"}</p>
-        <code className="w-full text-xs bg-zinc-100 rounded-lg p-2.5 break-all max-h-24 overflow-auto">{chave}</code>
-        <button type="button" onClick={copiar} className="w-full h-11 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">
+        <code className="w-full text-xs bg-zinc-100 rounded-lg p-2.5 break-all max-h-24 overflow-auto">
+          {chave}
+        </code>
+        <button
+          type="button"
+          onClick={copiar}
+          className="w-full h-11 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium"
+        >
           {copiado ? "Copiado!" : "Copiar"}
         </button>
       </div>
@@ -354,7 +422,19 @@ function JanelaPix({ link, onClose }: { link: LinkPublico; onClose: () => void }
 }
 
 // ---------- captura de e-mail ----------
-function FormularioEmail({ link, publico, raio, botaoCls, botaoStyle }: { link: LinkPublico; publico: boolean; raio: string; botaoCls: string; botaoStyle?: React.CSSProperties }) {
+function FormularioEmail({
+  link,
+  publico,
+  raio,
+  botaoCls,
+  botaoStyle,
+}: {
+  link: LinkPublico;
+  publico: boolean;
+  raio: string;
+  botaoCls: string;
+  botaoStyle?: React.CSSProperties;
+}) {
   const { captureLead } = useApi();
   const [email, setEmail] = useState("");
   const [armadilha, setArmadilha] = useState(""); // campo escondido: só robôs preenchem
@@ -378,7 +458,9 @@ function FormularioEmail({ link, publico, raio, botaoCls, botaoStyle }: { link: 
     <form onSubmit={enviar} className="w-full mb-3 flex flex-col gap-2" noValidate>
       <p className="text-center text-sm font-semibold break-words">{link.name}</p>
       {estado === "ok" ? (
-        <p role="status" className="text-center text-sm rounded-lg bg-white/20 py-3">Obrigado! Você está na lista.</p>
+        <p role="status" className="text-center text-sm rounded-lg bg-white/20 py-3">
+          Obrigado! Você está na lista.
+        </p>
       ) : (
         <>
           <input
@@ -401,10 +483,19 @@ function FormularioEmail({ link, publico, raio, botaoCls, botaoStyle }: { link: 
             onChange={(e) => setArmadilha(e.target.value)}
             className="absolute -left-[9999px] w-px h-px opacity-0"
           />
-          <button type="submit" disabled={estado === "enviando" || !email} style={{ borderRadius: raio, ...botaoStyle }} className={`w-full min-h-[44px] text-[13px] font-medium disabled:opacity-60 ${botaoCls}`}>
+          <button
+            type="submit"
+            disabled={estado === "enviando" || !email}
+            style={{ borderRadius: raio, ...botaoStyle }}
+            className={`w-full min-h-[44px] text-[13px] font-medium disabled:opacity-60 ${botaoCls}`}
+          >
             {estado === "enviando" ? "Enviando..." : "Quero receber"}
           </button>
-          {estado === "erro" && <p role="alert" className="text-center text-xs text-red-200">Não foi possível enviar. Confira o e-mail.</p>}
+          {estado === "erro" && (
+            <p role="alert" className="text-center text-xs text-red-200">
+              Não foi possível enviar. Confira o e-mail.
+            </p>
+          )}
         </>
       )}
     </form>

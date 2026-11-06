@@ -1,13 +1,13 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { ColorModeScript } from '@chakra-ui/react';
-import Providers from './providers';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ColorModeScript } from "@chakra-ui/react";
+import Providers from "./providers";
 
-const inter = Inter({ subsets: ['latin'], display: 'swap' });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: 'FaceLink',
+  title: "FaceLink",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

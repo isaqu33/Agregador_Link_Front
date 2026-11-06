@@ -16,7 +16,7 @@ function InputFormato({ textoApi, name }: InputFormatoProp) {
       name: fieldName,
       // ref: inputRef,
       getValue: () => {
-        return AppState.formato
+        return AppState.formato;
         // return ref.current.value;
       },
       setValue: (ref, value) => {
@@ -42,13 +42,12 @@ function InputFormato({ textoApi, name }: InputFormatoProp) {
 
   return (
     <div>
-      <FormLabel className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Formato dos botões</FormLabel>
+      <FormLabel className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        Formato dos botões
+      </FormLabel>
       {/* <Textarea placeholder="Here is a sample placeholder" /> */}
 
-      <div
-        style={{ borderRadius: "50px" }}
-        className="w-full flex flex-wrap gap-3 items-center"
-      >
+      <div style={{ borderRadius: "50px" }} className="w-full flex flex-wrap gap-3 items-center">
         {formatos.map((item, index) => (
           <div
             style={{ borderRadius: item.formato }}

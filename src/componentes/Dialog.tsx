@@ -3,7 +3,15 @@
 import { useEffect } from "react";
 
 // Janela simples sobre a página (a página pública não depende do Chakra).
-export default function Dialog({ titulo, onClose, children }: { titulo: string; onClose: () => void; children: React.ReactNode }) {
+export default function Dialog({
+  titulo,
+  onClose,
+  children,
+}: {
+  titulo: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
   useEffect(() => {
     const aoTeclar = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", aoTeclar);
@@ -21,7 +29,12 @@ export default function Dialog({ titulo, onClose, children }: { titulo: string; 
       >
         <div className="flex items-start justify-between gap-3 mb-3">
           <h2 className="text-base font-semibold break-words">{titulo}</h2>
-          <button type="button" onClick={onClose} aria-label="Fechar" className="text-zinc-400 hover:text-zinc-700 text-xl leading-none">
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Fechar"
+            className="text-zinc-400 hover:text-zinc-700 text-xl leading-none"
+          >
             ×
           </button>
         </div>

@@ -4,7 +4,15 @@ import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 
 // QR Code gerado no navegador (nada é enviado a terceiros).
-export default function QrCode({ texto, tamanho = 200, className = "" }: { texto: string; tamanho?: number; className?: string }) {
+export default function QrCode({
+  texto,
+  tamanho = 200,
+  className = "",
+}: {
+  texto: string;
+  tamanho?: number;
+  className?: string;
+}) {
   const [src, setSrc] = useState("");
 
   useEffect(() => {
@@ -17,7 +25,18 @@ export default function QrCode({ texto, tamanho = 200, className = "" }: { texto
     };
   }, [texto, tamanho]);
 
-  if (!src) return <div style={{ width: tamanho, height: tamanho }} className={`bg-zinc-100 rounded-lg ${className}`} />;
+  if (!src)
+    return (
+      <div style={{ width: tamanho, height: tamanho }} className={`bg-zinc-100 rounded-lg ${className}`} />
+    );
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt="QR Code" width={tamanho} height={tamanho} className={`rounded-lg bg-white ${className}`} />;
+  return (
+    <img
+      src={src}
+      alt="QR Code"
+      width={tamanho}
+      height={tamanho}
+      className={`rounded-lg bg-white ${className}`}
+    />
+  );
 }

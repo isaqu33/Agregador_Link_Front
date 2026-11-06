@@ -32,18 +32,16 @@ function Input({ name, ...rest }: Props) {
   }, [fieldName, registerField]);
 
   return (
-
     <div className=" w-full h-[100%]">
-        <input
-          name={name}
-          ref={inputRef}
-          type="text"
-          {...rest}
-    
-          className="w-[100%] h-full rounded-xl bg-white dark:bg-zinc-800 text-[#4c1d95] dark:text-violet-200 outline-none focus:border border-[#4c1d95] dark:border-violet-400"
-        />
-        {error  && <div className='text-[red]'>{error}</div>}
+      <input
+        name={name}
+        ref={inputRef}
+        type="text"
+        {...rest}
 
+        className="w-[100%] h-full rounded-xl bg-white dark:bg-zinc-800 text-[#4c1d95] dark:text-violet-200 outline-none focus:border border-[#4c1d95] dark:border-violet-400"
+      />
+      {error && <div className="text-[red]">{error}</div>}
     </div>
   );
 }

@@ -76,7 +76,8 @@ export default function Profile() {
     const m = meta.trim();
     const g = ga.trim().toUpperCase();
     if (m && !/^\d{5,20}$/.test(m)) return setErroPixels("Meta Pixel: apenas números (5 a 20 dígitos).");
-    if (g && !/^G-[A-Z0-9]{4,15}$/.test(g)) return setErroPixels("Google Analytics: use o formato G-XXXXXXXXXX.");
+    if (g && !/^G-[A-Z0-9]{4,15}$/.test(g))
+      return setErroPixels("Google Analytics: use o formato G-XXXXXXXXXX.");
     setErroPixels("");
     salvarPixels.mutate({ meta: m, ga: g });
   }
@@ -86,7 +87,9 @@ export default function Profile() {
     setOkUser(false);
     const u = username.trim().toLowerCase();
     if (!/^[a-z0-9][a-z0-9_.]{2,29}$/.test(u)) {
-      setErroUser("Use de 3 a 30 caracteres: letras minúsculas, números, _ e . (começando por letra ou número).");
+      setErroUser(
+        "Use de 3 a 30 caracteres: letras minúsculas, números, _ e . (começando por letra ou número)."
+      );
       return;
     }
     setErroUser("");
@@ -98,7 +101,8 @@ export default function Profile() {
     setOkRedes(false);
     const limpas = redes.map((r) => ({ network: r.network, url: r.url.trim() })).filter((r) => r.url);
     for (const r of limpas) {
-      const ok = r.network === "email" ? /^mailto:[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(r.url) : urlHttpValida(r.url);
+      const ok =
+        r.network === "email" ? /^mailto:[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(r.url) : urlHttpValida(r.url);
       if (!ok) {
         setErroRedes(
           `${redePorId(r.network)?.rotulo}: ${r.network === "email" ? "use mailto:voce@exemplo.com" : "informe uma URL começando com http:// ou https://"}`
@@ -131,7 +135,10 @@ export default function Profile() {
     a.click();
   }
   async function baixarPng() {
-    baixar("qrcode-facelink.png", await QRCode.toDataURL(urlPublica, { width: 1024, margin: 2, errorCorrectionLevel: "M" }));
+    baixar(
+      "qrcode-facelink.png",
+      await QRCode.toDataURL(urlPublica, { width: 1024, margin: 2, errorCorrectionLevel: "M" })
+    );
   }
   async function baixarSvg() {
     const svg = await QRCode.toString(urlPublica, { type: "svg", margin: 2, errorCorrectionLevel: "M" });
@@ -173,7 +180,10 @@ export default function Profile() {
             </button>
           </div>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Sua página: <span className="font-medium">{origem}/@{username || "seunome"}</span>
+            Sua página:{" "}
+            <span className="font-medium">
+              {origem}/@{username || "seunome"}
+            </span>
           </p>
           {erroUser && <p className="text-red-600 text-sm">{erroUser}</p>}
           {okUser && <p className="text-emerald-600 text-sm">Endereço salvo!</p>}
@@ -247,14 +257,24 @@ export default function Profile() {
 
       <section className="border-t border-zinc-100 dark:border-zinc-800 pt-8">
         <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Compartilhar</h2>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Divulgue o endereço da sua página ou imprima o QR Code.</p>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          Divulgue o endereço da sua página ou imprima o QR Code.
+        </p>
 
         <div className="mt-4 flex flex-col sm:flex-row gap-5 items-start">
-          <QrCode texto={urlPublica} tamanho={168} className="ring-1 ring-zinc-200 dark:ring-zinc-700 shrink-0" />
+          <QrCode
+            texto={urlPublica}
+            tamanho={168}
+            className="ring-1 ring-zinc-200 dark:ring-zinc-700 shrink-0"
+          />
           <div className="flex flex-col gap-3 min-w-0 w-full">
-            <code className="text-sm bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-lg px-3 py-2.5 break-all">{urlPublica}</code>
+            <code className="text-sm bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-lg px-3 py-2.5 break-all">
+              {urlPublica}
+            </code>
             <div className="flex flex-wrap gap-2">
-              <button type="button" onClick={copiar} className={botaoPrimario}>{copiado ? "Copiado!" : "Copiar endereço"}</button>
+              <button type="button" onClick={copiar} className={botaoPrimario}>
+                {copiado ? "Copiado!" : "Copiar endereço"}
+              </button>
               <span className="relative">
                 <ShareButton
                   url={urlPublica}
@@ -262,10 +282,27 @@ export default function Profile() {
                   className="h-10 px-4 flex items-center gap-2 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                 />
               </span>
-              <button type="button" onClick={baixarPng} className="h-10 px-4 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">Baixar PNG</button>
-              <button type="button" onClick={baixarSvg} className="h-10 px-4 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">Baixar SVG</button>
+              <button
+                type="button"
+                onClick={baixarPng}
+                className="h-10 px-4 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                Baixar PNG
+              </button>
+              <button
+                type="button"
+                onClick={baixarSvg}
+                className="h-10 px-4 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                Baixar SVG
+              </button>
             </div>
-            {!me?.username && <p className="text-xs text-amber-600 dark:text-amber-400">Escolha um nome de usuário acima para ter um endereço curto (/@usuario) e um QR Code mais simples.</p>}
+            {!me?.username && (
+              <p className="text-xs text-amber-600 dark:text-amber-400">
+                Escolha um nome de usuário acima para ter um endereço curto (/@usuario) e um QR Code mais
+                simples.
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -273,22 +310,45 @@ export default function Profile() {
       <section className="border-t border-zinc-100 dark:border-zinc-800 pt-8">
         <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Pixels de rastreamento</h2>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-          Meça os visitantes da sua página no Meta (Facebook/Instagram) e no Google Analytics. Os scripts só carregam na página pública.
-          Informe aos visitantes que a página usa rastreamento (LGPD).
+          Meça os visitantes da sua página no Meta (Facebook/Instagram) e no Google Analytics. Os scripts só
+          carregam na página pública. Informe aos visitantes que a página usa rastreamento (LGPD).
         </p>
         <form onSubmit={enviarPixels} className="mt-4 flex flex-col gap-3" noValidate>
           <label className="flex flex-col gap-1.5">
             <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Meta Pixel ID</span>
-            <input className={inputClass} value={meta} onChange={(e) => { setMeta(e.target.value); setOkPixels(false); }} placeholder="Somente números, ex.: 1234567890" inputMode="numeric" maxLength={20} />
+            <input
+              className={inputClass}
+              value={meta}
+              onChange={(e) => {
+                setMeta(e.target.value);
+                setOkPixels(false);
+              }}
+              placeholder="Somente números, ex.: 1234567890"
+              inputMode="numeric"
+              maxLength={20}
+            />
           </label>
           <label className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Google Analytics (ID de medição)</span>
-            <input className={inputClass} value={ga} onChange={(e) => { setGa(e.target.value); setOkPixels(false); }} placeholder="G-XXXXXXXXXX" maxLength={15} />
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Google Analytics (ID de medição)
+            </span>
+            <input
+              className={inputClass}
+              value={ga}
+              onChange={(e) => {
+                setGa(e.target.value);
+                setOkPixels(false);
+              }}
+              placeholder="G-XXXXXXXXXX"
+              maxLength={15}
+            />
           </label>
           {erroPixels && <p className="text-red-600 text-sm">{erroPixels}</p>}
           {okPixels && <p className="text-emerald-600 text-sm">Pixels salvos!</p>}
           <div className="flex justify-end">
-            <button type="submit" className={botaoPrimario} disabled={salvarPixels.isLoading}>{salvarPixels.isLoading ? "Salvando..." : "Salvar pixels"}</button>
+            <button type="submit" className={botaoPrimario} disabled={salvarPixels.isLoading}>
+              {salvarPixels.isLoading ? "Salvando..." : "Salvar pixels"}
+            </button>
           </div>
         </form>
       </section>

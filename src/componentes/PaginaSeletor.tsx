@@ -48,7 +48,9 @@ export default function PaginaSeletor() {
 
   return (
     <div className="flex items-center gap-2 flex-wrap mb-4 text-sm">
-      <label htmlFor="pagina" className="text-zinc-500 dark:text-zinc-400">Editando:</label>
+      <label htmlFor="pagina" className="text-zinc-500 dark:text-zinc-400">
+        Editando:
+      </label>
       <select
         id="pagina"
         value={pageId}
@@ -64,7 +66,11 @@ export default function PaginaSeletor() {
       </select>
 
       {paginas.length < MAX_PAGINAS_EXTRAS && !criando && (
-        <button type="button" onClick={() => setCriando(true)} className="flex items-center gap-1 h-9 px-3 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:border-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors">
+        <button
+          type="button"
+          onClick={() => setCriando(true)}
+          className="flex items-center gap-1 h-9 px-3 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:border-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
+        >
           <Plus size={14} weight="bold" /> Nova página
         </button>
       )}
@@ -72,7 +78,11 @@ export default function PaginaSeletor() {
       {atual && (
         <button
           type="button"
-          onClick={() => window.confirm(`Excluir a página "${atual.name}" com todos os links, contatos e estatísticas dela? Isso não pode ser desfeito.`) && excluir.mutate(atual.id)}
+          onClick={() =>
+            window.confirm(
+              `Excluir a página "${atual.name}" com todos os links, contatos e estatísticas dela? Isso não pode ser desfeito.`
+            ) && excluir.mutate(atual.id)
+          }
           className="flex items-center gap-1 h-9 px-3 rounded-lg text-zinc-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/20 transition-colors"
         >
           <Trash size={14} /> Excluir
@@ -89,8 +99,23 @@ export default function PaginaSeletor() {
             maxLength={60}
             className="h-9 rounded-lg px-3 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 outline-none focus:border-violet-500"
           />
-          <button type="submit" disabled={criar.isLoading} className="h-9 px-3 rounded-lg bg-violet-600 hover:bg-violet-700 text-white font-medium disabled:opacity-60">Criar</button>
-          <button type="button" onClick={() => { setCriando(false); setErro(""); }} className="h-9 px-2 text-zinc-500">Cancelar</button>
+          <button
+            type="submit"
+            disabled={criar.isLoading}
+            className="h-9 px-3 rounded-lg bg-violet-600 hover:bg-violet-700 text-white font-medium disabled:opacity-60"
+          >
+            Criar
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setCriando(false);
+              setErro("");
+            }}
+            className="h-9 px-2 text-zinc-500"
+          >
+            Cancelar
+          </button>
         </form>
       )}
       {erro && <span className="text-red-600 text-xs">{String(erro)}</span>}

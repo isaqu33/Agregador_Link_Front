@@ -63,7 +63,8 @@ export const TIPOS_LINK: TipoLink[] = [
     campo: "nenhum",
     tituloObrigatorio: true,
     tituloModal: "Adicionar captura de e-mail",
-    texto: "Um formulário na sua página para os visitantes deixarem o e-mail. Os contatos aparecem na aba Contatos.",
+    texto:
+      "Um formulário na sua página para os visitantes deixarem o e-mail. Os contatos aparecem na aba Contatos.",
     placeholder: "",
     unavailable: false,
   },
@@ -74,7 +75,8 @@ export const TIPOS_LINK: TipoLink[] = [
     campo: "pix",
     tituloObrigatorio: false,
     tituloModal: "Adicionar gorjeta (Pix)",
-    texto: "Informe sua chave Pix ou o código \"copia e cola\". O visitante copia a chave (e vê o QR Code, se for copia e cola).",
+    texto:
+      'Informe sua chave Pix ou o código "copia e cola". O visitante copia a chave (e vê o QR Code, se for copia e cola).',
     placeholder: "chave Pix ou código copia e cola",
     unavailable: false,
   },
@@ -252,17 +254,72 @@ export interface Rede {
 }
 
 export const REDES: Rede[] = [
-  { id: "instagram", rotulo: "Instagram", Icon: (p) => <InstagramLogo {...p} />, placeholder: "https://instagram.com/seuusuario" },
-  { id: "tiktok", rotulo: "TikTok", Icon: (p) => <TiktokLogo {...p} />, placeholder: "https://tiktok.com/@seuusuario" },
-  { id: "youtube", rotulo: "YouTube", Icon: (p) => <YoutubeLogo {...p} />, placeholder: "https://youtube.com/@seucanal" },
-  { id: "x", rotulo: "X (Twitter)", Icon: (p) => <TwitterLogo {...p} />, placeholder: "https://x.com/seuusuario" },
-  { id: "facebook", rotulo: "Facebook", Icon: (p) => <FacebookLogo {...p} />, placeholder: "https://facebook.com/seuusuario" },
-  { id: "linkedin", rotulo: "LinkedIn", Icon: (p) => <LinkedinLogo {...p} />, placeholder: "https://linkedin.com/in/seuusuario" },
-  { id: "github", rotulo: "GitHub", Icon: (p) => <GithubLogo {...p} />, placeholder: "https://github.com/seuusuario" },
-  { id: "twitch", rotulo: "Twitch", Icon: (p) => <TwitchLogo {...p} />, placeholder: "https://twitch.tv/seucanal" },
-  { id: "spotify", rotulo: "Spotify", Icon: (p) => <SpotifyLogo {...p} />, placeholder: "https://open.spotify.com/user/..." },
-  { id: "whatsapp", rotulo: "WhatsApp", Icon: (p) => <WhatsappLogo {...p} />, placeholder: "https://wa.me/5511999998888" },
-  { id: "email", rotulo: "E-mail", Icon: (p) => <EnvelopeSimple {...p} />, placeholder: "mailto:voce@exemplo.com" },
+  {
+    id: "instagram",
+    rotulo: "Instagram",
+    Icon: (p) => <InstagramLogo {...p} />,
+    placeholder: "https://instagram.com/seuusuario",
+  },
+  {
+    id: "tiktok",
+    rotulo: "TikTok",
+    Icon: (p) => <TiktokLogo {...p} />,
+    placeholder: "https://tiktok.com/@seuusuario",
+  },
+  {
+    id: "youtube",
+    rotulo: "YouTube",
+    Icon: (p) => <YoutubeLogo {...p} />,
+    placeholder: "https://youtube.com/@seucanal",
+  },
+  {
+    id: "x",
+    rotulo: "X (Twitter)",
+    Icon: (p) => <TwitterLogo {...p} />,
+    placeholder: "https://x.com/seuusuario",
+  },
+  {
+    id: "facebook",
+    rotulo: "Facebook",
+    Icon: (p) => <FacebookLogo {...p} />,
+    placeholder: "https://facebook.com/seuusuario",
+  },
+  {
+    id: "linkedin",
+    rotulo: "LinkedIn",
+    Icon: (p) => <LinkedinLogo {...p} />,
+    placeholder: "https://linkedin.com/in/seuusuario",
+  },
+  {
+    id: "github",
+    rotulo: "GitHub",
+    Icon: (p) => <GithubLogo {...p} />,
+    placeholder: "https://github.com/seuusuario",
+  },
+  {
+    id: "twitch",
+    rotulo: "Twitch",
+    Icon: (p) => <TwitchLogo {...p} />,
+    placeholder: "https://twitch.tv/seucanal",
+  },
+  {
+    id: "spotify",
+    rotulo: "Spotify",
+    Icon: (p) => <SpotifyLogo {...p} />,
+    placeholder: "https://open.spotify.com/user/...",
+  },
+  {
+    id: "whatsapp",
+    rotulo: "WhatsApp",
+    Icon: (p) => <WhatsappLogo {...p} />,
+    placeholder: "https://wa.me/5511999998888",
+  },
+  {
+    id: "email",
+    rotulo: "E-mail",
+    Icon: (p) => <EnvelopeSimple {...p} />,
+    placeholder: "mailto:voce@exemplo.com",
+  },
   { id: "site", rotulo: "Site", Icon: (p) => <Globe {...p} />, placeholder: "https://seusite.com" },
 ];
 

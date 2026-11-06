@@ -3,45 +3,53 @@
 @tailwind utilities;
 
 body {
-    @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-[#0b0b0f] dark:text-zinc-100;
+  @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-[#0b0b0f] dark:text-zinc-100;
 }
 
 /* Scrollbar discreta */
 * {
-    scrollbar-width: thin;
-    scrollbar-color: #d4d4d8 transparent;
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d8 transparent;
 }
 
 *::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  width: 6px;
+  height: 6px;
 }
 
 *::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 
 *::-webkit-scrollbar-thumb {
-    background-color: #d4d4d8;
-    border-radius: 20px;
+  background-color: #d4d4d8;
+  border-radius: 20px;
 }
 
 .dark * {
-    scrollbar-color: #52525b transparent;
+  scrollbar-color: #52525b transparent;
 }
 
 .dark *::-webkit-scrollbar-thumb {
-    background-color: #52525b;
+  background-color: #52525b;
 }
 
 /* Menus suspensos: aparecem com um leve fade (a saída é imediata, sem resíduo na tela) */
 @keyframes menu-in {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .menu-in {
-    animation: menu-in 120ms ease-out;
+  animation: menu-in 120ms ease-out;
 }
 @media (prefers-reduced-motion: reduce) {
-    .menu-in { animation: none; }
+  .menu-in {
+    animation: none;
+  }
 }

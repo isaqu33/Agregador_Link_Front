@@ -37,7 +37,10 @@ export default function ResetPassword({ token }: { token: string }) {
     return (
       <AuthCard titulo="Link inválido">
         <p className="text-sm text-zinc-700 dark:text-zinc-300">Este link não é válido.</p>
-        <Link href="/forgot-password" className="block text-center text-[13px] text-violet-700 dark:text-violet-300 hover:underline mt-4">
+        <Link
+          href="/forgot-password"
+          className="block text-center text-[13px] text-violet-700 dark:text-violet-300 hover:underline mt-4"
+        >
           Pedir um novo link
         </Link>
       </AuthCard>
@@ -48,13 +51,37 @@ export default function ResetPassword({ token }: { token: string }) {
     <AuthCard titulo="Nova senha" subtitulo="Escolha uma senha com pelo menos 8 caracteres.">
       {ok ? (
         <>
-          <p className="text-sm text-zinc-700 dark:text-zinc-300" role="status">Senha alterada com sucesso!</p>
-          <Link href="/login" className={`${botaoAuth} flex items-center justify-center mt-4`}>Entrar</Link>
+          <p className="text-sm text-zinc-700 dark:text-zinc-300" role="status">
+            Senha alterada com sucesso!
+          </p>
+          <Link href="/login" className={`${botaoAuth} flex items-center justify-center mt-4`}>
+            Entrar
+          </Link>
         </>
       ) : (
         <form onSubmit={enviar} className="flex flex-col">
-          <input className={inputAuth} type="password" placeholder="Nova senha" value={senha} onChange={(e) => setSenha(e.target.value)} required minLength={8} maxLength={72} autoComplete="new-password" />
-          <input className={inputAuth} type="password" placeholder="Repita a nova senha" value={confirma} onChange={(e) => setConfirma(e.target.value)} required minLength={8} maxLength={72} autoComplete="new-password" />
+          <input
+            className={inputAuth}
+            type="password"
+            placeholder="Nova senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            required
+            minLength={8}
+            maxLength={72}
+            autoComplete="new-password"
+          />
+          <input
+            className={inputAuth}
+            type="password"
+            placeholder="Repita a nova senha"
+            value={confirma}
+            onChange={(e) => setConfirma(e.target.value)}
+            required
+            minLength={8}
+            maxLength={72}
+            autoComplete="new-password"
+          />
           {erro && <p className="text-red-600 text-[13px] mb-3">{erro}</p>}
           <button type="submit" disabled={carregando} className={botaoAuth}>
             {carregando ? "Salvando..." : "Salvar nova senha"}

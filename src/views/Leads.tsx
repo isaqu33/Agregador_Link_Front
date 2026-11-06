@@ -5,7 +5,13 @@ import { usePageContext } from "../contexts/PageContext";
 import useApi from "../server/api";
 
 const formatarData = (iso: string) =>
-  new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  new Date(iso).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 // E-mails deixados pelos visitantes nos formulários "Captura de e-mail" da página.
 export default function Leads() {
@@ -24,7 +30,8 @@ export default function Leads() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Contatos</h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-            E-mails deixados pelos visitantes. Para receber, adicione um link do tipo <strong>Captura de e-mail</strong>.
+            E-mails deixados pelos visitantes. Para receber, adicione um link do tipo{" "}
+            <strong>Captura de e-mail</strong>.
           </p>
         </div>
         <a

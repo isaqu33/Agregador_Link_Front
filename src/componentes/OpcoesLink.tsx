@@ -65,10 +65,25 @@ const campo =
   "w-full h-10 rounded-lg px-3 text-sm text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 dark:focus:ring-violet-500/30 transition";
 const rotulo = "text-sm font-medium text-zinc-700 dark:text-zinc-300";
 
-function Caixa({ marcado, onChange, children, desc }: { marcado: boolean; onChange: (v: boolean) => void; children: React.ReactNode; desc?: string }) {
+function Caixa({
+  marcado,
+  onChange,
+  children,
+  desc,
+}: {
+  marcado: boolean;
+  onChange: (v: boolean) => void;
+  children: React.ReactNode;
+  desc?: string;
+}) {
   return (
     <label className="flex items-start gap-2.5 cursor-pointer">
-      <input type="checkbox" checked={marcado} onChange={(e) => onChange(e.target.checked)} className="mt-1 w-4 h-4 accent-violet-600" />
+      <input
+        type="checkbox"
+        checked={marcado}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-1 w-4 h-4 accent-violet-600"
+      />
       <span className="flex flex-col">
         <span className={rotulo}>{children}</span>
         {desc && <span className="text-xs text-zinc-500 dark:text-zinc-400">{desc}</span>}
@@ -129,12 +144,31 @@ export default function OpcoesLink({ tipo, value, onChange, podeEmbed }: Props) 
                   <ImageIcon size={22} />
                 )}
               </span>
-              <input ref={arquivo} type="file" accept="image/*" className="hidden" onChange={(e) => { escolher(e.target.files?.[0]); e.target.value = ""; }} />
-              <button type="button" onClick={() => arquivo.current?.click()} disabled={enviando} className="h-9 px-3 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-60">
+              <input
+                ref={arquivo}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  escolher(e.target.files?.[0]);
+                  e.target.value = "";
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => arquivo.current?.click()}
+                disabled={enviando}
+                className="h-9 px-3 rounded-lg border border-zinc-300 dark:border-zinc-700 text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-60"
+              >
                 {enviando ? "Enviando..." : value.thumbnail ? "Trocar" : "Escolher imagem"}
               </button>
               {value.thumbnail && (
-                <button type="button" aria-label="Remover miniatura" onClick={() => set({ thumbnail: null })} className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:text-red-600">
+                <button
+                  type="button"
+                  aria-label="Remover miniatura"
+                  onClick={() => set({ thumbnail: null })}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:text-red-600"
+                >
                   <X size={16} />
                 </button>
               )}
@@ -143,12 +177,20 @@ export default function OpcoesLink({ tipo, value, onChange, podeEmbed }: Props) 
           </div>
         )}
 
-        <Caixa marcado={value.featured} onChange={(v) => set({ featured: v })} desc="Aparece maior na sua página (com a miniatura em destaque).">
+        <Caixa
+          marcado={value.featured}
+          onChange={(v) => set({ featured: v })}
+          desc="Aparece maior na sua página (com a miniatura em destaque)."
+        >
           Destacar este link
         </Caixa>
 
         {podeEmbed && (
-          <Caixa marcado={value.embed} onChange={(v) => set({ embed: v })} desc="Mostra o player do vídeo/música direto na página, no lugar do botão.">
+          <Caixa
+            marcado={value.embed}
+            onChange={(v) => set({ embed: v })}
+            desc="Mostra o player do vídeo/música direto na página, no lugar do botão."
+          >
             Mostrar player
           </Caixa>
         )}
@@ -158,14 +200,26 @@ export default function OpcoesLink({ tipo, value, onChange, podeEmbed }: Props) 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <label className="flex flex-col gap-1 text-xs text-zinc-500 dark:text-zinc-400">
               Aparece a partir de
-              <input type="datetime-local" className={campo} value={value.startAt} onChange={(e) => set({ startAt: e.target.value })} />
+              <input
+                type="datetime-local"
+                className={campo}
+                value={value.startAt}
+                onChange={(e) => set({ startAt: e.target.value })}
+              />
             </label>
             <label className="flex flex-col gap-1 text-xs text-zinc-500 dark:text-zinc-400">
               Some em
-              <input type="datetime-local" className={campo} value={value.endAt} onChange={(e) => set({ endAt: e.target.value })} />
+              <input
+                type="datetime-local"
+                className={campo}
+                value={value.endAt}
+                onChange={(e) => set({ endAt: e.target.value })}
+              />
             </label>
           </div>
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">Deixe vazio para ficar sempre visível.</span>
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            Deixe vazio para ficar sempre visível.
+          </span>
         </div>
 
         {!semUrl && (
@@ -181,11 +235,16 @@ export default function OpcoesLink({ tipo, value, onChange, podeEmbed }: Props) 
               maxLength={72}
             />
             {value.locked && (
-              <Caixa marcado={value.removePassword} onChange={(v) => set({ removePassword: v, password: v ? "" : value.password })}>
+              <Caixa
+                marcado={value.removePassword}
+                onChange={(v) => set({ removePassword: v, password: v ? "" : value.password })}
+              >
                 Remover a senha atual
               </Caixa>
             )}
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">Quem clicar precisa digitar a senha para abrir. O endereço real nunca é enviado antes disso.</span>
+            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              Quem clicar precisa digitar a senha para abrir. O endereço real nunca é enviado antes disso.
+            </span>
           </div>
         )}
       </div>

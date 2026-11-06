@@ -11,7 +11,9 @@ export default function ImgNoLinks({ onEscolher }: { onEscolher?: (tipo: string)
       <span className="w-14 h-14 rounded-2xl bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300 flex items-center justify-center">
         <Plus size={26} weight="bold" />
       </span>
-      <h2 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-100">Sua página ainda não tem links</h2>
+      <h2 className="mt-4 text-base font-semibold text-zinc-900 dark:text-zinc-100">
+        Sua página ainda não tem links
+      </h2>
       <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400 max-w-[320px]">
         Adicione o primeiro link para ele aparecer na prévia ao lado. Comece por um destes:
       </p>

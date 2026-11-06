@@ -57,7 +57,12 @@ function ModalCreateLink({ cancelModal, typeLinkSelected, clinTypeSelected }: Mo
     setErros(novos);
     if (Object.keys(novos).length) return;
 
-    mutate({ name: nome, link, type: tipo.name, ...(tipo.name === "Cabecalho" ? {} : opcoesParaApi(opcoes, false)) });
+    mutate({
+      name: nome,
+      link,
+      type: tipo.name,
+      ...(tipo.name === "Cabecalho" ? {} : opcoesParaApi(opcoes, false)),
+    });
   }
 
   if (!tipo) return null;
@@ -95,7 +100,13 @@ function ModalCreateLink({ cancelModal, typeLinkSelected, clinTypeSelected }: Mo
         {tipo.campo !== "nenhum" && (
           <label className="flex flex-col gap-1.5">
             <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              {tipo.campo === "email" ? "E-mail" : tipo.campo === "url" ? "URL" : tipo.campo === "pix" ? "Chave Pix" : "Número"}
+              {tipo.campo === "email"
+                ? "E-mail"
+                : tipo.campo === "url"
+                  ? "URL"
+                  : tipo.campo === "pix"
+                    ? "Chave Pix"
+                    : "Número"}
             </span>
             <input
               className={inputClass}
@@ -109,7 +120,12 @@ function ModalCreateLink({ cancelModal, typeLinkSelected, clinTypeSelected }: Mo
           </label>
         )}
 
-        <OpcoesLink tipo={tipo.name} value={opcoes} onChange={setOpcoes} podeEmbed={tipo.name === "Youtube" || tipo.name === "Spotify"} />
+        <OpcoesLink
+          tipo={tipo.name}
+          value={opcoes}
+          onChange={setOpcoes}
+          podeEmbed={tipo.name === "Youtube" || tipo.name === "Spotify"}
+        />
 
         {erros.geral && <p className="text-red-600 text-sm">{erros.geral}</p>}
 

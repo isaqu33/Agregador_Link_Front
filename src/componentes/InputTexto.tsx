@@ -8,7 +8,7 @@ interface InputTextoProp {
   name: string;
 }
 
-function InputTexto({ textoApi,name }: InputTextoProp) {
+function InputTexto({ textoApi, name }: InputTextoProp) {
   const { fieldName, defaultValue, registerField, error } = useField(name);
 
   useEffect(() => {

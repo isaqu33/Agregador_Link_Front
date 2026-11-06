@@ -26,15 +26,12 @@ function ModalDelet({ idLink }: ModalDeletProp) {
 
   const client = useQueryClient();
 
-  const { mutate: mutatedeletlink } = useMutation(
-    (linkid: string) => DeleteLink(linkid),
-    {
-      onSuccess: () => {
-        client.invalidateQueries(ME_KEY);
-        onClose();
-      },
-    }
-  );
+  const { mutate: mutatedeletlink } = useMutation((linkid: string) => DeleteLink(linkid), {
+    onSuccess: () => {
+      client.invalidateQueries(ME_KEY);
+      onClose();
+    },
+  });
 
   function deletLink() {
     mutatedeletlink(idLink as string);
@@ -50,11 +47,7 @@ function ModalDelet({ idLink }: ModalDeletProp) {
         <Trash size={18} />
       </button>
 
-      <AlertDialog
-        isOpen={isOpen}
-        leastDestructiveRef={cancelRef as any}
-        onClose={onClose}
-      >
+      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef as any} onClose={onClose}>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -62,8 +55,7 @@ function ModalDelet({ idLink }: ModalDeletProp) {
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Realmente deseja apagar esse link? Não terá como restaurar o
-              mesmo!!
+              Realmente deseja apagar esse link? Não terá como restaurar o mesmo!!
             </AlertDialogBody>
 
             <AlertDialogFooter>

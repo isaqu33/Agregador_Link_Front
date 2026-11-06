@@ -62,8 +62,12 @@ export default function Login({ googleEnabled = false }: { googleEnabled?: boole
         {tamanhoTela > 916 ? <PhoneMockup /> : null}
 
         <div className="w-full max-w-[400px] flex flex-col bg-white dark:bg-zinc-900 rounded-2xl p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Bem-vindo!</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 mb-6">{mode === "login" ? "Entre na sua conta para continuar." : "Crie sua conta em poucos segundos."}</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+            Bem-vindo!
+          </h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 mb-6">
+            {mode === "login" ? "Entre na sua conta para continuar." : "Crie sua conta em poucos segundos."}
+          </p>
 
           {googleEnabled && (
             <>
@@ -116,7 +120,10 @@ export default function Login({ googleEnabled = false }: { googleEnabled?: boole
             />
 
             {mode === "login" && (
-              <Link href="/forgot-password" className="self-end -mt-1 mb-3 text-[13px] text-violet-700 dark:text-violet-300 hover:underline">
+              <Link
+                href="/forgot-password"
+                className="self-end -mt-1 mb-3 text-[13px] text-violet-700 dark:text-violet-300 hover:underline"
+              >
                 Esqueci minha senha
               </Link>
             )}

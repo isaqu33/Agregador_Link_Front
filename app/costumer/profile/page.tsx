@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import ClientOnly from '../../../src/componentes/ClientOnly';
-import Loader from '../../../src/componentes/Loader';
-import Profile from '../../../src/views/Profile';
+import ClientOnly from "../../../src/componentes/ClientOnly";
+import Loader from "../../../src/componentes/Loader";
+import Profile from "../../../src/views/Profile";
 
 export default function Page() {
   return (

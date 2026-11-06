@@ -1,11 +1,4 @@
-import {
-  InstagramLogo,
-  LinkBreak,
-  LinkSimpleHorizontal,
-  Image,
-  MapPinLine,
-  CaretDown,
-} from "phosphor-react";
+import { InstagramLogo, LinkBreak, LinkSimpleHorizontal, Image, MapPinLine, CaretDown } from "phosphor-react";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import SimpleLink from "./SimpleLink";
 
@@ -14,29 +7,23 @@ import BtnAddLink from "../componentes/btnAddLink";
 import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 
-import ReactCrop, {
-  centerCrop,
-  makeAspectCrop,
-  Crop,
-  PixelCrop,
-} from "react-image-crop";
+import ReactCrop, { centerCrop, makeAspectCrop, Crop, PixelCrop } from "react-image-crop";
 import { canvasPreview } from "../canvasPreview";
 import { useDebounceEffect } from "../useDebounceEffect";
 
 import "react-image-crop/dist/ReactCrop.css";
 
 const imgfeliz = "/assets/feliz.png";
-const AVATARES = Array.from({ length: 12 }, (_, i) => `/assets/avatars/avatar-${String(i + 1).padStart(2, "0")}.svg`);
+const AVATARES = Array.from(
+  { length: 12 },
+  (_, i) => `/assets/avatars/avatar-${String(i + 1).padStart(2, "0")}.svg`
+);
 import useApi from "../server/api";
 import useMe, { ME_KEY } from "../hooks/useMe";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { TailSpin } from "react-loader-spinner";
 
-function centerAspectCrop(
-  mediaWidth: number,
-  mediaHeight: number,
-  aspect: number
-) {
+function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: number) {
   return centerCrop(
     makeAspectCrop(
       {
@@ -54,7 +41,6 @@ function centerAspectCrop(
 
 function SocialMediaLink() {
   const { data: me } = useMe();
-  
 
   const { editProfile, uploadImage } = useApi();
 
@@ -78,29 +64,23 @@ function SocialMediaLink() {
 
   const client = useQueryClient();
 
-  const { mutate: mutateChangePhotoProfile } = useMutation(
-    (photoURL: string) => editProfile({ photoURL }),
-    {
-      onSuccess: () => {
-        client.invalidateQueries(ME_KEY);
-        setImgSrc("");
+  const { mutate: mutateChangePhotoProfile } = useMutation((photoURL: string) => editProfile({ photoURL }), {
+    onSuccess: () => {
+      client.invalidateQueries(ME_KEY);
+      setImgSrc("");
 
-      
-        setshowLouder(false)
-      },
-      onError: () => setshowLouder(false),
-    }
-  );
+      setshowLouder(false);
+    },
+    onError: () => setshowLouder(false),
+  });
 
   function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
-      
+
       setCrop(undefined); // Makes crop preview update between images.
       const reader = new FileReader();
-      reader.addEventListener("load", () =>
-        setImgSrc(reader.result?.toString() || "")
-      );
+      reader.addEventListener("load", () => setImgSrc(reader.result?.toString() || ""));
       reader.readAsDataURL(e.target.files[0]);
     }
   }
@@ -123,20 +103,9 @@ function SocialMediaLink() {
 
   useDebounceEffect(
     async () => {
-      if (
-        completedCrop?.width &&
-        completedCrop?.height &&
-        imgRef.current &&
-        previewCanvasRef.current
-      ) {
+      if (completedCrop?.width && completedCrop?.height && imgRef.current && previewCanvasRef.current) {
         // We use canvasPreview as it's much faster than imgPreview.
-        canvasPreview(
-          imgRef.current,
-          previewCanvasRef.current,
-          completedCrop,
-          scale,
-          rotate
-        );
+        canvasPreview(imgRef.current, previewCanvasRef.current, completedCrop, scale, rotate);
       }
     },
     100,
@@ -144,7 +113,6 @@ function SocialMediaLink() {
   );
 
   async function saveonServerImgSaved() {
-
     const texte1 = await canvasPreview(
       imgRef.current,
       previewCanvasRef.current,
@@ -170,10 +138,8 @@ function SocialMediaLink() {
       });
   }, [imgselecionada]);
 
- 
-
   return showLouder ? (
-    <div className=' w-full h-full flex justify-center items-center'>
+    <div className=" w-full h-full flex justify-center items-center">
       <TailSpin
         height="200"
         width="80"
@@ -199,7 +165,10 @@ function SocialMediaLink() {
             {me?.photoURL ? (
               <img src={me.photoURL} alt="Foto de perfil" className="w-full h-full object-cover" />
             ) : (
-              <span aria-hidden className="w-full h-full flex items-center justify-center text-4xl font-semibold text-violet-700 dark:text-violet-300 bg-violet-100 dark:bg-violet-500/20 select-none">
+              <span
+                aria-hidden
+                className="w-full h-full flex items-center justify-center text-4xl font-semibold text-violet-700 dark:text-violet-300 bg-violet-100 dark:bg-violet-500/20 select-none"
+              >
                 {(me?.title || me?.name || "?").trim().charAt(0).toUpperCase()}
               </span>
             )}
@@ -210,13 +179,7 @@ function SocialMediaLink() {
             tabIndex={0}
             className="cursor-pointer h-10 px-5 inline-flex items-center justify-center rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium transition-colors"
           >
-            <input
-              className="hidden"
-              type="file"
-              accept="image/*"
-              id="InputImg"
-              onChange={onSelectFile}
-            />
+            <input className="hidden" type="file" accept="image/*" id="InputImg" onChange={onSelectFile} />
             {me?.photoURL ? "Enviar outra foto" : "Enviar uma foto"}
           </label>
 

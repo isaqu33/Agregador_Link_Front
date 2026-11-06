@@ -70,7 +70,7 @@ function ModalEditar({ dataLink }: ModalEditarProp) {
     if (!nome.trim()) novos.nome = "Informe um título";
     let link = "";
     if (!semUrl) {
-      const r = montarLink(tipo ?? { campo: "url" } as any, url);
+      const r = montarLink(tipo ?? ({ campo: "url" } as any), url);
       if (r.erro) novos.url = r.erro;
       link = r.link;
     }
@@ -108,7 +108,11 @@ function ModalEditar({ dataLink }: ModalEditarProp) {
             {!semUrl && (
               <FormControl isInvalid={!!erros.url}>
                 <FormLabel fontSize="sm">
-                  {tipo?.campo === "email" ? "E-mail" : tipo?.campo === "telefone" || tipo?.campo === "whatsapp" ? "Número" : "Link"}
+                  {tipo?.campo === "email"
+                    ? "E-mail"
+                    : tipo?.campo === "telefone" || tipo?.campo === "whatsapp"
+                      ? "Número"
+                      : "Link"}
                 </FormLabel>
                 <Input
                   value={url}
@@ -121,7 +125,12 @@ function ModalEditar({ dataLink }: ModalEditarProp) {
             )}
 
             <div className="mt-4">
-              <OpcoesLink tipo={dataLink.type ?? "Link"} value={opcoes} onChange={setOpcoes} podeEmbed={dataLink.type === "Youtube" || dataLink.type === "Spotify"} />
+              <OpcoesLink
+                tipo={dataLink.type ?? "Link"}
+                value={opcoes}
+                onChange={setOpcoes}
+                podeEmbed={dataLink.type === "Youtube" || dataLink.type === "Spotify"}
+              />
             </div>
 
             {erros.geral && <p className="text-red-600 text-sm mt-3">{erros.geral}</p>}

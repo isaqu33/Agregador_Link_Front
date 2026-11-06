@@ -11,7 +11,6 @@ interface InputeTituloProp {
 }
 
 const InputeTitulo = observer(({ tituloUser, name }: InputeTituloProp) => {
-
   const { fieldName, defaultValue, registerField, error } = useField(name);
 
   useEffect(() => {
@@ -46,7 +45,7 @@ const InputeTitulo = observer(({ tituloUser, name }: InputeTituloProp) => {
 
       <div className="w-full flex justify-center items-center">
         <div className="w-full flex justify-center items-center text-zinc-900 dark:text-zinc-100">
-          <FormControl >
+          <FormControl>
             {/* <FormControl isRequired> */}
             <Input
               variant="outline"
