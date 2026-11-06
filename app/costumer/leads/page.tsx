@@ -1,10 +1,13 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import ClientOnly from '../../../src/componentes/ClientOnly';
 import Loader from '../../../src/componentes/Loader';
-
-const Leads = dynamic(() => import('../../../src/views/Leads'), { ssr: false, loading: () => <Loader /> });
+import Leads from '../../../src/views/Leads';
 
 export default function Page() {
-  return <Leads />;
+  return (
+    <ClientOnly fallback={<Loader />}>
+      <Leads />
+    </ClientOnly>
+  );
 }

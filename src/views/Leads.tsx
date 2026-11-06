@@ -12,7 +12,7 @@ export default function Leads() {
   const { getLeads, deleteLead, exportUrl } = useApi();
   const { pageId } = usePageContext();
   const client = useQueryClient();
-  const { data, isLoading, isError } = useQuery(["leads", pageId], getLeads);
+  const { data, isLoading, isError } = useQuery(["leads", pageId], getLeads, { staleTime: 30 * 1000 });
 
   const remover = useMutation((id: string) => deleteLead(id), {
     onSuccess: () => client.invalidateQueries("leads"),

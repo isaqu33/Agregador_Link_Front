@@ -83,7 +83,8 @@ Decisões que valem destacar:
 - **Uma só renderização para prévia e página pública.** O componente `ProfileView` desenha a página nos dois lugares,
   então o que o usuário vê no celular do painel é exatamente o que os visitantes verão.
 - **SSR só onde importa.** A página pública é servida como HTML completo (SEO, compartilhamento em redes). As telas
-  do painel carregam só no navegador (`dynamic(..., { ssr: false })`), porque usam `window`.
+  do painel renderizam só no navegador (componente `ClientOnly`), porque usam `window`. Evitei `next/dynamic` com `loading`:
+  o React segura a troca de um fallback por ~300 ms, e medi que isso era todo o atraso ao trocar de aba (caiu de ~350 ms para ~50 ms).
 - **Tempo real sem polling.** A aba Analytics abre um `EventSource` (SSE); a cada visita/clique a API avisa e a tela
   busca os números de novo. Ao reconectar depois de uma queda (repouso, rede), ela se atualiza sozinha.
 - **Estado em um lugar só.** Dados do servidor ficam no react-query (`useMe`); o rascunho de Aparência fica em MobX;

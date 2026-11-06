@@ -1,10 +1,13 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import ClientOnly from '../../../src/componentes/ClientOnly';
 import Loader from '../../../src/componentes/Loader';
-
-const Appearance = dynamic(() => import('../../../src/views/Appearance'), { ssr: false, loading: () => <Loader /> });
+import Appearance from '../../../src/views/Appearance';
 
 export default function Page() {
-  return <Appearance />;
+  return (
+    <ClientOnly fallback={<Loader />}>
+      <Appearance />
+    </ClientOnly>
+  );
 }

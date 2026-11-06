@@ -18,7 +18,8 @@ import {
 } from "phosphor-react";
 import LogoApp from "./componentes/logoApp";
 import ThemeToggle from "./componentes/ThemeToggle";
-import useMe from "./hooks/useMe";
+import useMe, { pageKey } from "./hooks/useMe";
+import { usePageContext } from "./contexts/PageContext";
 import useApi from "./server/api";
 import Loader, { PreviewSkeleton } from "./componentes/Loader";
 import PaginaSeletor from "./componentes/PaginaSeletor";
@@ -37,7 +38,8 @@ const Shell = observer(({ children }: { children: React.ReactNode }) => {
   const tamanhoTela = screenSize();
 
 
-  const { resendVerification } = useApi();
+  const { resendVerification, getAnalytics, getLeads, getPage } = useApi();
+  const { pageId } = usePageContext();
   const [reenvio, setReenvio] = useState<"" | "enviando" | "ok" | "erro">("");
   async function reenviar() {
     setReenvio("enviando");
@@ -56,6 +58,24 @@ const Shell = observer(({ children }: { children: React.ReactNode }) => {
 
   // an expired or invalid session sends the user back to the login
   const { data: me, isLoading } = useMe({ onError: sair });
+
+  // Páginas extras: busca os dados de todas assim que a lista chega, para a troca no seletor não esperar a rede
+  const paginasExtras = (me as any)?.pages as { id: string }[] | undefined;
+  useEffect(() => {
+    paginasExtras?.forEach((p) =>
+      queryClient.prefetchQuery(pageKey(p.id) as any, () => getPage(p.id), { staleTime: 1000 * 60 * 5 })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paginasExtras?.map((p) => p.id).join(",")]);
+
+  // Ao passar o mouse na aba, adianta os dados dela (a tela abre já com números)
+  const adiantar = (rota: string) => {
+    if (rota.endsWith("/analytics")) {
+      queryClient.prefetchQuery(["analytics", 30, pageId], () => getAnalytics(30), { staleTime: 30 * 1000 });
+    } else if (rota.endsWith("/leads")) {
+      queryClient.prefetchQuery(["leads", pageId], getLeads, { staleTime: 30 * 1000 });
+    }
+  };
 
   const NavLink = [
     {
@@ -170,6 +190,8 @@ const Shell = observer(({ children }: { children: React.ReactNode }) => {
                 <Link
                   key={item.Nome}
                   href={item.rota}
+                  onMouseEnter={() => adiantar(item.rota)}
+                  onFocus={() => adiantar(item.rota)}
                   className={`flex items-center gap-2 text-sm font-medium px-4 h-9 rounded-lg transition-colors ${
                     ativo
                       ? "bg-white dark:bg-zinc-700 text-violet-700 dark:text-violet-300 shadow-sm"
