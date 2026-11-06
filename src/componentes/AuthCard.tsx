@@ -4,7 +4,15 @@ import LogoApp from "./logoApp";
 import ThemeToggle from "./ThemeToggle";
 
 // Casca das telas de autenticação simples (recuperar senha, confirmar e-mail)
-export default function AuthCard({ titulo, subtitulo, children }: { titulo: string; subtitulo?: string; children: React.ReactNode }) {
+export default function AuthCard({
+  titulo,
+  subtitulo,
+  children,
+}: {
+  titulo: string;
+  subtitulo?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="w-full min-h-[100vh] box-border flex flex-col px-6 py-5">
       <div className="flex items-center justify-between">

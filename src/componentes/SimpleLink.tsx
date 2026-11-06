@@ -102,10 +102,7 @@ function SimpleLink() {
     // setTypeIcon(setArray);
 
     if (modalCreateLink) {
-      const setArray = objmodalCreateLink.filter(
-        (elemento) => elemento.type === modalCreateLink
-      )[0];
-
+      const setArray = objmodalCreateLink.filter((elemento) => elemento.type === modalCreateLink)[0];
 
       setSetingModal(setArray);
 
@@ -116,22 +113,15 @@ function SimpleLink() {
   }, [modalCreateLink]);
 
   const url = window.location.href;
-  
- 
 
   useEffect(() => {
     if (url.indexOf("/costumer") != -1) {
-
-      
       AppState.incrementDescricao("");
       AppState.incrementCounter("");
       AppState.incrementFormato("");
       AppState.incrementcorFundo("");
       AppState.incrementFonte("");
       AppState.incrementBotao("");
-
-
-      
     }
   }, [url]);
 
@@ -156,15 +146,8 @@ function SimpleLink() {
           <span className="text-xs font-medium uppercase tracking-wider text-zinc-400">Seus links</span>
         </div>
       )}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={onDragEnd}
-      >
-        <SortableContext
-          items={links.map((l: any) => l.id)}
-          strategy={verticalListSortingStrategy}
-        >
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        <SortableContext items={links.map((l: any) => l.id)} strategy={verticalListSortingStrategy}>
           <div className="w-full">
             {links.map((item: any) => (
               <ItensLinks key={item.id} link={item} idlink={item.id} />

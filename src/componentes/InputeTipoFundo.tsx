@@ -45,7 +45,6 @@ function InputeTipoFundo({ cor, name, estado }: InputeTipoFundoProp) {
 
   const [first, setfirst] = useState(0);
 
-
   useEffect(() => {
     if (cor.indexOf("linear") != -1) {
       setGradienteCor(cor);
@@ -134,9 +133,7 @@ function InputeTipoFundo({ cor, name, estado }: InputeTipoFundoProp) {
                   className="w-9 h-9 rounded-full cursor-pointer flex justify-center items-center ring-1 ring-black/10 hover:scale-105 transition-transform"
                   style={{ backgroundColor: `${item.cor}` }}
                 >
-                  {normalCor == item.cor ? (
-                    <Check color={"white"} size={18} weight="bold" />
-                  ) : null}
+                  {normalCor == item.cor ? <Check color={"white"} size={18} weight="bold" /> : null}
                 </div>
               ))
             : objCorGradiente.map((item, indem) => (
@@ -152,9 +149,7 @@ function InputeTipoFundo({ cor, name, estado }: InputeTipoFundoProp) {
                     backgroundImage: item.cor,
                   }}
                 >
-                  {gradienteCor == item.cor ? (
-                    <Check color="white" size={18} weight="bold" />
-                  ) : null}
+                  {gradienteCor == item.cor ? <Check color="white" size={18} weight="bold" /> : null}
                 </div>
               ))}
         </div>

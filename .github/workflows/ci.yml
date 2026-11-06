@@ -1,0 +1,32 @@
+# Generic CI: validates every push and pull request. There is no deploy step on purpose
+# (portfolio project, nothing goes to production). The Playwright e2e suite needs the API
+# stack running, so it is run locally (`npm run test:e2e`), not here.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+        env:
+          AUTH_SECRET: ci-only-secret
+          API_INTERNAL_URL: http://localhost:3070

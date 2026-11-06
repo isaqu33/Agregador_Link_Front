@@ -46,11 +46,11 @@ export default function Links() {
 
   return (
     <div className="flex flex-col min-h-[560px]">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{corbordaElinktype}</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+        {corbordaElinktype}
+      </h1>
 
-      <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-        {textos}
-      </p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{textos}</p>
 
       <nav className="w-full mt-6 mb-6 flex border-b border-zinc-200 dark:border-zinc-800">
         {texte.map((item, index) => (
@@ -69,9 +69,7 @@ export default function Links() {
         ))}
       </nav>
 
-      <div className="w-full relative min-h-[300px]  ">
-        {componente}
-      </div>
+      <div className="w-full relative min-h-[300px]  ">{componente}</div>
     </div>
   );
 }

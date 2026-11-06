@@ -13,9 +13,7 @@ export function Spinner({ className = "" }: { className?: string }) {
 export default function Loader({ fullScreen = false }: { fullScreen?: boolean }) {
   return (
     <div
-      className={`w-full flex items-center justify-center ${
-        fullScreen ? "min-h-[100vh]" : "min-h-[300px]"
-      }`}
+      className={`w-full flex items-center justify-center ${fullScreen ? "min-h-[100vh]" : "min-h-[300px]"}`}
     >
       <Spinner />
     </div>

@@ -37,7 +37,6 @@ const Shell = observer(({ children }: { children: React.ReactNode }) => {
 
   const tamanhoTela = screenSize();
 
-
   const { resendVerification, getAnalytics, getLeads, getPage } = useApi();
   const { pageId } = usePageContext();
   const [reenvio, setReenvio] = useState<"" | "enviando" | "ok" | "erro">("");
@@ -105,7 +104,6 @@ const Shell = observer(({ children }: { children: React.ReactNode }) => {
     },
   ];
 
-
   const pathname = usePathname();
   const [previo, setprevio] = useState(false);
 
@@ -171,7 +169,13 @@ const Shell = observer(({ children }: { children: React.ReactNode }) => {
               disabled={reenvio === "enviando" || reenvio === "ok"}
               className="font-medium underline underline-offset-2 disabled:no-underline disabled:opacity-70"
             >
-              {reenvio === "ok" ? "E-mail enviado!" : reenvio === "enviando" ? "Enviando..." : reenvio === "erro" ? "Falhou. Tentar de novo" : "Reenviar e-mail"}
+              {reenvio === "ok"
+                ? "E-mail enviado!"
+                : reenvio === "enviando"
+                  ? "Enviando..."
+                  : reenvio === "erro"
+                    ? "Falhou. Tentar de novo"
+                    : "Reenviar e-mail"}
             </button>
           </div>
         </div>
@@ -183,9 +187,7 @@ const Shell = observer(({ children }: { children: React.ReactNode }) => {
           <nav className="flex gap-1 mb-4 p-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl w-fit max-w-full overflow-x-auto">
             {NavLink.map((item) => {
               const ativo =
-                item.rota === "/costumer"
-                  ? pathname === "/costumer"
-                  : pathname?.startsWith(item.rota);
+                item.rota === "/costumer" ? pathname === "/costumer" : pathname?.startsWith(item.rota);
               return (
                 <Link
                   key={item.Nome}

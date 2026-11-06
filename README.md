@@ -1,10 +1,37 @@
-# FaceLink — Front
+<p align="center"><img src="public/assets/logo.svg" alt="FaceLink" width="300"></p>
+
+<h3 align="center">Seus links, sua página, suas métricas em tempo real</h3>
+
+<p align="center">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs&logoColor=white">
+  <img alt="React" src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white">
+  <img alt="Tailwind" src="https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss&logoColor=white">
+  <img alt="Playwright" src="https://img.shields.io/badge/e2e-Playwright-2EAD33?logo=playwright&logoColor=white">
+  <img alt="Vitest" src="https://img.shields.io/badge/unit-Vitest-6E9F18?logo=vitest&logoColor=white">
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white">
+</p>
 
 Agregador de links no estilo Linktree: cada pessoa monta uma página pública com seus links, redes sociais, tema e foto,
 acompanha visitas e cliques em tempo real e compartilha o endereço `/@usuario`.
 
 Este repositório é o **front** (Next.js). A API fica em
-[Agregador_Link_api](https://github.com/isaqu33/Agregador_Link_api).
+[Agregador_Link_api](https://github.com/isaqu33/Agregador_Link_api) (NestJS, com Swagger, testes e CI).
+
+![Painel de links](screenshots/links-escuro.png)
+
+## O que este projeto demonstra
+
+| Área | O que foi aplicado |
+|---|---|
+| **SSR e SEO** | página pública `/@usuario` renderizada no servidor, com `generateMetadata`, Open Graph, Twitter Card e URL canônica |
+| **Segurança** | token da API **nunca** chega ao navegador (cookie criptografado do Auth.js + proxy com lista branca), rotas privadas validadas no servidor, players em `iframe` com `sandbox`, pixels só com IDs validados |
+| **Tempo real** | analytics atualizado por **SSE**, com reconexão e atualização automática |
+| **Desempenho medido** | troca de aba de ~350 ms para ~50 ms: a causa era o `next/dynamic` com `loading` (Suspense segura o fallback por ~300 ms); trocado por `ClientOnly` |
+| **UX** | prévia ao vivo no celular, arrastar e soltar para ordenar, recorte de foto, 6 temas, claro/escuro, estados vazios, carregamento com spinner |
+| **Estado** | react-query para dados do servidor, MobX para o rascunho de aparência, nada de dado de usuário em `localStorage` |
+| **Testes** | Vitest (regras de montagem de links e estilo) e **Playwright** (login, criar link, página pública SSR, rota privada, proxy) |
+| **Qualidade e CI** | Prettier + ESLint (`next/core-web-vitals`) + `tsc` + GitHub Actions + Dependabot |
 
 | Painel (escuro) | Painel (claro) |
 |---|---|
@@ -160,11 +187,16 @@ screenshots/              capturas usadas neste README
 ## Verificação
 
 ```bash
-npx tsc --noEmit    # tipos
-npx next build      # build de produção
+npm run typecheck      # tipos
+npm run lint           # ESLint (next/core-web-vitals)
+npm run format:check   # Prettier
+npm test               # Vitest: regras de montagem de links e leitura de estilo
+npm run test:e2e       # Playwright: login, criar link, página pública SSR (precisa do stack no ar)
+npm run build          # build de produção
 ```
 
-O front ainda não tem testes automatizados; a lógica testada (auth, links, analytics, segurança HTTP) está na API.
+O CI (GitHub Actions) roda formatação, lint, tipos, testes e build, sem etapa de deploy. A lógica de auth, links,
+analytics e segurança HTTP é testada na API.
 
 ## Segurança
 
@@ -183,5 +215,4 @@ dispositivos, origens e CSV), temas/fontes/botões, recuperar senha e confirmar 
 agendamento, player, QR Code, compartilhar, coleta de e-mail, login com Google, pixels, exportação, gorjeta (Pix),
 senha por link e várias páginas.
 
-Pendências: país nas analytics (exige base de GeoIP), banner de consentimento para os pixels, testes automatizados do
-front e teste do login com Google com credenciais reais.
+Pendências: país nas analytics (exige base de GeoIP), banner de consentimento para os pixels e teste do login com Google com credenciais reais.

@@ -1,4 +1,4 @@
-const apiUrl = process.env.API_INTERNAL_URL ?? 'http://localhost:3070';
+const apiUrl = process.env.API_INTERNAL_URL ?? "http://localhost:3070";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -6,8 +6,8 @@ const nextConfig = {
   async rewrites() {
     return {
       // /@usuario -> app/u/[username]; antes das rotas dinâmicas e de arquivos
-      beforeFiles: [{ source: '/@:username', destination: '/u/:username' }],
-      afterFiles: [{ source: '/media/:path*', destination: `${apiUrl}/media/:path*` }],
+      beforeFiles: [{ source: "/@:username", destination: "/u/:username" }],
+      afterFiles: [{ source: "/media/:path*", destination: `${apiUrl}/media/:path*` }],
     };
   },
 };

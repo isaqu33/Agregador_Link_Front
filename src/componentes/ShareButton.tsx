@@ -4,7 +4,15 @@ import { ShareNetwork } from "phosphor-react";
 import { useState } from "react";
 
 // Compartilhar: usa o menu do celular quando existe; senão copia o endereço.
-export default function ShareButton({ url, titulo, className = "" }: { url: string; titulo?: string; className?: string }) {
+export default function ShareButton({
+  url,
+  titulo,
+  className = "",
+}: {
+  url: string;
+  titulo?: string;
+  className?: string;
+}) {
   const [copiado, setCopiado] = useState(false);
 
   async function compartilhar() {
@@ -25,7 +33,10 @@ export default function ShareButton({ url, titulo, className = "" }: { url: stri
     <button type="button" onClick={compartilhar} aria-label="Compartilhar" className={className}>
       <ShareNetwork size={18} />
       {copiado && (
-        <span role="status" className="absolute top-full mt-1 right-0 whitespace-nowrap rounded bg-black/80 text-white text-[11px] px-2 py-1">
+        <span
+          role="status"
+          className="absolute top-full mt-1 right-0 whitespace-nowrap rounded bg-black/80 text-white text-[11px] px-2 py-1"
+        >
           Link copiado!
         </span>
       )}

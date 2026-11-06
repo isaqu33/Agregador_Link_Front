@@ -33,3 +33,5 @@ next-env.d.ts
 # Contexto do Claude (não versionar)
 /docs/
 /CLAUDE.md
+test-results
+playwright-report

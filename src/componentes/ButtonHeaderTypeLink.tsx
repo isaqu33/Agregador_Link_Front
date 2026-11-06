@@ -8,7 +8,7 @@ export default function ButtonHeaderTypeLink({
   onComponent,
   component,
   texto,
-  onchandText
+  onchandText,
 }: any) {
   const ativo = typeLink == name;
 
@@ -17,7 +17,7 @@ export default function ButtonHeaderTypeLink({
       onClick={() => {
         onchandtypeLink(name);
         onComponent(component);
-        onchandText(texto)
+        onchandText(texto);
       }}
       className={`flex items-center justify-center gap-2 px-4 py-3 -mb-px text-sm font-medium border-b-2 transition-colors ${
         ativo

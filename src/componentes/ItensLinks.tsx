@@ -40,29 +40,40 @@ function selos(l?: link) {
   const out: { texto: string; cor: string }[] = [];
   if (!l) return out;
   const agora = Date.now();
-  if (l.featured) out.push({ texto: "Destaque", cor: "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300" });
-  if (l.startAt && new Date(l.startAt).getTime() > agora) out.push({ texto: "Agendado", cor: "bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-300" });
-  else if (l.endAt && new Date(l.endAt).getTime() <= agora) out.push({ texto: "Expirado", cor: "bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300" });
-  else if (l.endAt) out.push({ texto: "Com prazo", cor: "bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-300" });
-  if (l.locked) out.push({ texto: "Senha", cor: "bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-300" });
-  if (l.embed) out.push({ texto: "Player", cor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300" });
+  if (l.featured)
+    out.push({
+      texto: "Destaque",
+      cor: "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300",
+    });
+  if (l.startAt && new Date(l.startAt).getTime() > agora)
+    out.push({ texto: "Agendado", cor: "bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-300" });
+  else if (l.endAt && new Date(l.endAt).getTime() <= agora)
+    out.push({ texto: "Expirado", cor: "bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300" });
+  else if (l.endAt)
+    out.push({ texto: "Com prazo", cor: "bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-300" });
+  if (l.locked)
+    out.push({ texto: "Senha", cor: "bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-300" });
+  if (l.embed)
+    out.push({
+      texto: "Player",
+      cor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300",
+    });
   return out;
 }
 
 function ItensLinks({ link, idlink }: ItensLinksProps) {
   const [typeIcon, setTypeIcon] = useState<any>();
 
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: idlink as string });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: idlink as string,
+  });
 
   const { editAtivacao } = useApi();
   const client = useQueryClient();
   const tamanhoTela = screenSize();
 
   useEffect(() => {
-    const setArray = typesSocialMediaa.filter(
-      (elemento) => elemento.name == link?.type
-    )[0];
+    const setArray = typesSocialMediaa.filter((elemento) => elemento.name == link?.type)[0];
 
     setTypeIcon(setArray);
   }, [link]);
@@ -110,7 +121,10 @@ function ItensLinks({ link, idlink }: ItensLinksProps) {
         <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate flex items-center gap-2">
           <span className="truncate">{link?.name}</span>
           {selos(link).map((sel) => (
-            <span key={sel.texto} className={`shrink-0 text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded ${sel.cor}`}>
+            <span
+              key={sel.texto}
+              className={`shrink-0 text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded ${sel.cor}`}
+            >
               {sel.texto}
             </span>
           ))}

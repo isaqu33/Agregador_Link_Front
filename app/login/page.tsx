@@ -1,8 +1,8 @@
-import { redirect } from 'next/navigation';
-import { auth, googleEnabled } from '../../auth';
-import LoginClient from './login-client';
+import { redirect } from "next/navigation";
+import { auth, googleEnabled } from "../../auth";
+import LoginClient from "./login-client";
 
 export default async function LoginPage() {
-  if (await auth()) redirect('/costumer');
+  if (await auth()) redirect("/costumer");
   return <LoginClient googleEnabled={googleEnabled} />;
 }

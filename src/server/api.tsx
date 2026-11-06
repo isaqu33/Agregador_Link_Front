@@ -105,7 +105,9 @@ function useApi() {
 
   // ---- e-mail contacts ----
   const getLeads = async () => {
-    const { data } = await api.get<{ total: number; leads: Lead[] }>(`/leads${pageId ? `?pageId=${pageId}` : ""}`);
+    const { data } = await api.get<{ total: number; leads: Lead[] }>(
+      `/leads${pageId ? `?pageId=${pageId}` : ""}`
+    );
     return data;
   };
   const deleteLead = async (id: string) => (await api.post("/leads/delete", { id })).data;

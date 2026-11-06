@@ -11,7 +11,6 @@ export async function canvasPreview(
   rotate = 0,
   selectPhoto?: boolean
 ) {
-
   var base64 = false;
 
   const ctx = canvas.getContext("2d");

@@ -51,10 +51,45 @@ export function lerTemplate(template?: string | null): EstiloPerfil {
 }
 
 export const TEMAS = [
-  { id: "violeta", rotulo: "Violeta", cor: "linear-gradient(to right top, #4c1d95, #663da5, #7e5bb5, #9679c5, #ae97d4)", formato: "60px", fonte: "inter", botao: "preenchido" },
-  { id: "oceano", rotulo: "Oceano", cor: "linear-gradient(to right top, #0f2027, #203a43, #2c5364)", formato: "10px", fonte: "poppins", botao: "contorno" },
-  { id: "por-do-sol", rotulo: "Pôr do sol", cor: "linear-gradient(to right top, #ee0979, #ff6a00)", formato: "60px", fonte: "poppins", botao: "sombra" },
-  { id: "floresta", rotulo: "Floresta", cor: "linear-gradient(to right top, #134e5e, #71b280)", formato: "0px", fonte: "inter", botao: "sombra" },
+  {
+    id: "violeta",
+    rotulo: "Violeta",
+    cor: "linear-gradient(to right top, #4c1d95, #663da5, #7e5bb5, #9679c5, #ae97d4)",
+    formato: "60px",
+    fonte: "inter",
+    botao: "preenchido",
+  },
+  {
+    id: "oceano",
+    rotulo: "Oceano",
+    cor: "linear-gradient(to right top, #0f2027, #203a43, #2c5364)",
+    formato: "10px",
+    fonte: "poppins",
+    botao: "contorno",
+  },
+  {
+    id: "por-do-sol",
+    rotulo: "Pôr do sol",
+    cor: "linear-gradient(to right top, #ee0979, #ff6a00)",
+    formato: "60px",
+    fonte: "poppins",
+    botao: "sombra",
+  },
+  {
+    id: "floresta",
+    rotulo: "Floresta",
+    cor: "linear-gradient(to right top, #134e5e, #71b280)",
+    formato: "0px",
+    fonte: "inter",
+    botao: "sombra",
+  },
   { id: "noite", rotulo: "Noite", cor: "#111827", formato: "10px", fonte: "mono", botao: "contorno" },
-  { id: "elegante", rotulo: "Elegante", cor: "#1f2937", formato: "10px", fonte: "playfair", botao: "preenchido" },
+  {
+    id: "elegante",
+    rotulo: "Elegante",
+    cor: "#1f2937",
+    formato: "10px",
+    fonte: "playfair",
+    botao: "preenchido",
+  },
 ];

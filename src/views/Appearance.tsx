@@ -21,27 +21,23 @@ const Appearance = observer(() => {
 
   // remonta o formulário depois de salvar, para limpar os campos digitados
   const [formKey, setFormKey] = useState(0);
-  const { mutate: mutateChangeProfile } = useMutation(
-    (data: any) => editProfile(data),
-    {
-      onSuccess: async () => {
-        await client.invalidateQueries(ME_KEY);
-        AppState.incrementCounter("");
-        AppState.incrementDescricao("");
-        AppState.incrementFormato("");
-        AppState.incrementcorFundo("");
-        AppState.incrementFonte("");
-        AppState.incrementBotao("");
-        setFormKey((k) => k + 1);
-      },
-    }
-  );
+  const { mutate: mutateChangeProfile } = useMutation((data: any) => editProfile(data), {
+    onSuccess: async () => {
+      await client.invalidateQueries(ME_KEY);
+      AppState.incrementCounter("");
+      AppState.incrementDescricao("");
+      AppState.incrementFormato("");
+      AppState.incrementcorFundo("");
+      AppState.incrementFonte("");
+      AppState.incrementBotao("");
+      setFormKey((k) => k + 1);
+    },
+  });
 
   const atual = lerTemplate(me?.template);
 
   const formRef = useRef() as MutableRefObject<FormHandles>;
   const handleFormSubmit = async (data: any) => {
-
     // campo que o usuário não mexeu mantém o valor salvo (antes sobrescrevia com vazio)
     let text = {
       template: JSON.stringify({
@@ -54,7 +50,6 @@ const Appearance = observer(() => {
       about: data.about || me?.about,
     };
 
-
     if (text) {
       mutateChangeProfile(text);
     }
@@ -63,24 +58,19 @@ const Appearance = observer(() => {
     <div className="flex flex-col min-h-[560px]">
       <Form key={formKey} ref={formRef} onSubmit={handleFormSubmit}>
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Aparência</h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Personalize o tema, o fundo, a fonte, o título e o estilo dos botões da sua página.</p>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          Personalize o tema, o fundo, a fonte, o título e o estilo dos botões da sua página.
+        </p>
 
         <div className="mt-6 flex flex-col gap-6">
           <InputEstilo fonteSalva={atual.fonte} botaoSalvo={atual.botao} />
 
           <div>
-            <InputeTipoFundo
-              estado={AppState.corFundo}
-              name="cor"
-              cor={atual.cor ?? ""}
-            />
+            <InputeTipoFundo estado={AppState.corFundo} name="cor" cor={atual.cor ?? ""} />
           </div>
 
           <div>
-            <InputeTitulo
-              name="title"
-              tituloUser={me?.title as string}
-            />
+            <InputeTitulo name="title" tituloUser={me?.title as string} />
           </div>
 
           <div>

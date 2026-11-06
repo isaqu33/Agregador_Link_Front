@@ -50,13 +50,29 @@ export function metadataDoPerfil(p: PerfilPublico): Metadata {
   const titulo = p.username ? `${nome} (@${p.username})` : nome;
   const descricao = p.about?.trim() || `Todos os links de ${nome} em um só lugar.`;
   const url = `${urlDoSite()}${caminhoPublico(p)}`;
-  const imagem = p.photoURL ? (p.photoURL.startsWith("/") ? `${urlDoSite()}${p.photoURL}` : p.photoURL) : undefined;
+  const imagem = p.photoURL
+    ? p.photoURL.startsWith("/")
+      ? `${urlDoSite()}${p.photoURL}`
+      : p.photoURL
+    : undefined;
 
   return {
     title: titulo,
     description: descricao,
     alternates: { canonical: url },
-    openGraph: { type: "profile", title: titulo, description: descricao, url, siteName: "FaceLink", images: imagem ? [imagem] : undefined },
-    twitter: { card: "summary", title: titulo, description: descricao, images: imagem ? [imagem] : undefined },
+    openGraph: {
+      type: "profile",
+      title: titulo,
+      description: descricao,
+      url,
+      siteName: "FaceLink",
+      images: imagem ? [imagem] : undefined,
+    },
+    twitter: {
+      card: "summary",
+      title: titulo,
+      description: descricao,
+      images: imagem ? [imagem] : undefined,
+    },
   };
 }
