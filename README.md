@@ -30,7 +30,7 @@ Este repositório é o **front** (Next.js). A API fica em
 | **Desempenho medido** | troca de aba de ~350 ms para ~50 ms: a causa era o `next/dynamic` com `loading` (Suspense segura o fallback por ~300 ms); trocado por `ClientOnly` |
 | **UX** | prévia ao vivo no celular, arrastar e soltar para ordenar, recorte de foto, 6 temas, claro/escuro, estados vazios, carregamento com spinner |
 | **Estado** | react-query para dados do servidor, MobX para o rascunho de aparência, nada de dado de usuário em `localStorage` |
-| **Testes** | Vitest (regras de montagem de links e estilo) e **Playwright** (login, criar link, página pública SSR, rota privada, proxy) |
+| **Testes** | Vitest (regras de montagem de links e estilo) e **Playwright** (login, criar link, página pública SSR, fundo em vídeo, rota privada, proxy) |
 | **Qualidade e CI** | Prettier + ESLint (`next/core-web-vitals`) + `tsc` + GitHub Actions + Dependabot |
 
 | Painel (escuro) | Painel (claro) |
@@ -71,8 +71,9 @@ Este repositório é o **front** (Next.js). A API fica em
 
 **Painel** (`/costumer`, exige login)
 - **Links:** criar, editar, ativar/desativar, excluir e **reordenar arrastando**.
-- **Aparência:** 6 temas prontos, fundo (cor sólida ou gradiente), 4 fontes, 3 estilos de botão (preenchido, contorno,
-  sombra) e 3 formatos. A prévia no celular reage na hora; só salva em "Atualizar".
+- **Aparência:** 6 temas prontos, fundo (cor sólida, gradiente, **imagem ou vídeo em loop**), **cor do texto**, 4 fontes,
+  3 estilos de botão (preenchido, contorno, sombra), 3 formatos e **marca d'água "Feito com FaceLink" removível**.
+  A prévia no celular reage na hora; só salva em "Atualizar".
 - **Perfil:** nome de usuário único (`/@usuario`), até 8 redes sociais, **QR Code** (baixa PNG/SVG), compartilhar e pixels.
 - **Páginas:** seletor no topo para alternar entre a página principal e até 5 páginas extras (criar/excluir).
 - **Contatos:** e-mails coletados pelos formulários, com remoção e **exportação CSV**.

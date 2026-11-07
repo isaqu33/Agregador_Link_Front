@@ -30,9 +30,28 @@ export interface EstiloPerfil {
   formato: string;
   fonte: string;
   botao: string;
+  // cor do texto da página (#rrggbb); vazio = branco
+  texto: string;
+  // imagem ou vídeo de fundo, enviados por /media; vazio = só a cor/degradê
+  fundoMidia: string;
+  // "Feito com FaceLink" no rodapé da página pública
+  marca: boolean;
 }
 
-export const ESTILO_PADRAO: EstiloPerfil = { cor: "", formato: "", fonte: "inter", botao: "preenchido" };
+export const ESTILO_PADRAO: EstiloPerfil = {
+  cor: "",
+  formato: "",
+  fonte: "inter",
+  botao: "preenchido",
+  texto: "",
+  fundoMidia: "",
+  marca: true,
+};
+
+const COR_HEX = /^#[0-9a-fA-F]{6}$/;
+const MIDIA = /^\/media\/[0-9a-f]{24}\/[0-9a-f-]{36}\.(jpg|png|webp|gif|mp4|webm)$/;
+
+export const ehVideo = (url: string) => /\.(mp4|webm)$/i.test(url);
 
 // `template` é um JSON em string na API: { cor, formato, fonte, botao }
 export function lerTemplate(template?: string | null): EstiloPerfil {
@@ -44,6 +63,9 @@ export function lerTemplate(template?: string | null): EstiloPerfil {
       formato: typeof t.formato === "string" ? t.formato : "",
       fonte: typeof t.fonte === "string" && FONTES[t.fonte] ? t.fonte : "inter",
       botao: typeof t.botao === "string" && BOTOES.some((b) => b.id === t.botao) ? t.botao : "preenchido",
+      texto: typeof t.texto === "string" && COR_HEX.test(t.texto) ? t.texto : "",
+      fundoMidia: typeof t.fundoMidia === "string" && MIDIA.test(t.fundoMidia) ? t.fundoMidia : "",
+      marca: t.marca !== false,
     };
   } catch {
     return { ...ESTILO_PADRAO };

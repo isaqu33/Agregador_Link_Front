@@ -72,7 +72,7 @@ const Shell = observer(({ children }: { children: React.ReactNode }) => {
     if (rota.endsWith("/analytics")) {
       queryClient.prefetchQuery(["analytics", 30, pageId], () => getAnalytics(30), { staleTime: 30 * 1000 });
     } else if (rota.endsWith("/leads")) {
-      queryClient.prefetchQuery(["leads", pageId], getLeads, { staleTime: 30 * 1000 });
+      queryClient.prefetchInfiniteQuery(["leads", pageId], () => getLeads(), { staleTime: 30 * 1000 });
     }
   };
 

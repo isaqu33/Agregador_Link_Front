@@ -31,6 +31,9 @@ const Preview = observer(({ dados }: PreviewProps) => {
         formato: AppState.formato || salvo.formato,
         fonte: AppState.fonte || salvo.fonte,
         botao: AppState.botao || salvo.botao,
+        texto: AppState.texto || salvo.texto,
+        fundoMidia: AppState.fundoMidia === "remover" ? "" : AppState.fundoMidia || salvo.fundoMidia,
+        marca: AppState.marca ? AppState.marca === "sim" : salvo.marca,
       }}
     />
   );

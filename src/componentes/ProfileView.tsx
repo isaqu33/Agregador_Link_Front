@@ -5,7 +5,7 @@ import Dialog from "./Dialog";
 import QrCode from "./QrCode";
 import ShareButton from "./ShareButton";
 import useApi from "../server/api";
-import { EstiloPerfil, FONTES } from "../perfilEstilo";
+import { EstiloPerfil, FONTES, ehVideo } from "../perfilEstilo";
 import { redePorId, tipoPorNome } from "../utils/objectstoberendered";
 
 export interface LinkPublico {
@@ -116,7 +116,7 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
       return (
         <h2
           key={chave}
-          className="w-full text-center text-xs font-semibold uppercase tracking-wider text-white/80 mt-3 mb-3 break-words"
+          className="w-full text-center text-xs font-semibold uppercase tracking-wider opacity-80 mt-3 mb-3 break-words"
         >
           {l.name}
         </h2>
@@ -216,17 +216,45 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
 
   return (
     <div
-      className={`w-full flex justify-center bg-slate-600 ${className}`}
+      className={`relative overflow-hidden w-full flex justify-center bg-slate-600 ${className}`}
       style={{ backgroundColor: fundoCor, backgroundImage: fundoImagem }}
     >
+      {estilo.fundoMidia ? (
+        <>
+          {ehVideo(estilo.fundoMidia) ? (
+            // decorativo: sem som, em loop, e some com "reduzir movimento" (fica só a cor)
+            <video
+              src={estilo.fundoMidia}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden
+              className="absolute inset-0 w-full h-full object-cover motion-reduce:hidden"
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={estilo.fundoMidia}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
+          {/* véu escuro para o texto continuar legível sobre qualquer imagem */}
+          <div aria-hidden className="absolute inset-0 bg-black/35" />
+        </>
+      ) : null}
       <div
         className={`relative w-full max-w-[500px] min-h-full text-zinc-100 px-5 pt-12 pb-8 flex flex-col items-center ${fonte}`}
+        style={estilo.texto ? { color: estilo.texto } : undefined}
       >
         {publico && urlPublica ? (
           <ShareButton
             url={urlPublica}
             titulo={titulo ?? undefined}
-            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors"
+            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-inherit flex items-center justify-center transition-colors"
           />
         ) : null}
 
@@ -240,7 +268,7 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
             />
           ) : (
             // sem foto: inicial do nome (antes aparecia uma carinha que não combinava com o design)
-            <span aria-hidden className="text-3xl font-semibold text-white select-none">
+            <span aria-hidden className="text-3xl font-semibold select-none">
               {(titulo ?? "?").trim().charAt(0).toUpperCase() || "?"}
             </span>
           )}
@@ -250,9 +278,7 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
           <h1 className="text-lg font-semibold w-full mt-3 text-center break-words">{titulo}</h1>
         ) : null}
         {dados.about ? (
-          <p className="text-xs text-white/80 mt-1 text-center break-words whitespace-pre-line">
-            {dados.about}
-          </p>
+          <p className="text-xs opacity-80 mt-1 text-center break-words whitespace-pre-line">{dados.about}</p>
         ) : null}
 
         {dados.socials && dados.socials.length > 0 ? (
@@ -267,7 +293,7 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
                   target={externo(s.url) ? "_blank" : undefined}
                   rel="noopener noreferrer"
                   aria-label={rede.rotulo}
-                  className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors"
+                  className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-inherit flex items-center justify-center transition-colors"
                 >
                   <rede.Icon size={18} />
                 </a>
@@ -280,21 +306,23 @@ export default function ProfileView({ dados, estilo, modo, urlPublica, className
           {visiveis.map(renderLink)}
           {visiveis.length === 0 &&
             (publico ? (
-              <p className="text-center text-sm text-white/70">Ainda não há links por aqui.</p>
+              <p className="text-center text-sm opacity-70">Ainda não há links por aqui.</p>
             ) : (
               <EstadoVazioPrevia />
             ))}
         </div>
 
-        <p className="mt-auto pt-8 text-[11px] text-white/70 font-medium">
-          {publico ? (
-            <a href="/" className="hover:text-white">
-              Feito com FaceLink
-            </a>
-          ) : (
-            "FaceLink"
-          )}
-        </p>
+        {estilo.marca ? (
+          <p className="mt-auto pt-8 text-[11px] opacity-70 font-medium">
+            {publico ? (
+              <a href="/" className="hover:opacity-100">
+                Feito com FaceLink
+              </a>
+            ) : (
+              "FaceLink"
+            )}
+          </p>
+        ) : null}
       </div>
 
       {bloqueado && <JanelaSenha link={bloqueado} publico={publico} onClose={() => setBloqueado(null)} />}

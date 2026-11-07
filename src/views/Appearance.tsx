@@ -7,6 +7,7 @@ import InputTexto from "../componentes/InputTexto";
 import { MutableRefObject, useRef, useState } from "react";
 import InputFormato from "../componentes/InputFormato";
 import InputEstilo from "../componentes/InputEstilo";
+import InputPersonalizar from "../componentes/InputPersonalizar";
 import { lerTemplate } from "../perfilEstilo";
 import { Form } from "@unform/web";
 import { FormHandles } from "@unform/core";
@@ -30,6 +31,9 @@ const Appearance = observer(() => {
       AppState.incrementcorFundo("");
       AppState.incrementFonte("");
       AppState.incrementBotao("");
+      AppState.incrementTexto("");
+      AppState.incrementFundoMidia("");
+      AppState.incrementMarca("");
       setFormKey((k) => k + 1);
     },
   });
@@ -45,6 +49,9 @@ const Appearance = observer(() => {
         formato: AppState.formato || data.formato || atual.formato || "",
         fonte: AppState.fonte || atual.fonte,
         botao: AppState.botao || atual.botao,
+        texto: AppState.texto || atual.texto,
+        fundoMidia: AppState.fundoMidia === "remover" ? "" : AppState.fundoMidia || atual.fundoMidia,
+        marca: AppState.marca ? AppState.marca === "sim" : atual.marca,
       }),
       title: data.title || me?.title,
       about: data.about || me?.about,
@@ -68,6 +75,8 @@ const Appearance = observer(() => {
           <div>
             <InputeTipoFundo estado={AppState.corFundo} name="cor" cor={atual.cor ?? ""} />
           </div>
+
+          <InputPersonalizar atual={atual} />
 
           <div>
             <InputeTitulo name="title" tituloUser={me?.title as string} />

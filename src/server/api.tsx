@@ -74,9 +74,10 @@ function useApi() {
   };
 
   // Returns the stored path (/media/<user>/<file>) that goes into photoURL.
+  // Also used for page background videos (MP4/WebM, up to 15 MB; images up to 5 MB).
   const uploadImage = async (file: Blob): Promise<string> => {
     const form = new FormData();
-    form.append("file", file, "image.png");
+    form.append("file", file, file instanceof File ? file.name : "image.png");
     const { data } = await api.post<{ url: string }>("/media", form);
     return data.url;
   };
@@ -104,9 +105,13 @@ function useApi() {
   const deletePage = async (id: string) => (await api.post("/pages/delete", { id })).data;
 
   // ---- e-mail contacts ----
-  const getLeads = async () => {
-    const { data } = await api.get<{ total: number; leads: Lead[] }>(
-      `/leads${pageId ? `?pageId=${pageId}` : ""}`
+  // One page of contacts; `cursor` is the nextCursor of the previous page (undefined = first page).
+  const getLeads = async (cursor?: string) => {
+    const params = new URLSearchParams({ limit: "50" });
+    if (pageId) params.set("pageId", pageId);
+    if (cursor) params.set("cursor", cursor);
+    const { data } = await api.get<{ total: number; leads: Lead[]; nextCursor: string | null }>(
+      `/leads?${params.toString()}`
     );
     return data;
   };

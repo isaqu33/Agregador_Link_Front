@@ -1,5 +1,5 @@
 import { DownloadSimple, Trash } from "phosphor-react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "react-query";
 import { Spinner } from "../componentes/Loader";
 import { usePageContext } from "../contexts/PageContext";
 import useApi from "../server/api";
@@ -18,7 +18,14 @@ export default function Leads() {
   const { getLeads, deleteLead, exportUrl } = useApi();
   const { pageId } = usePageContext();
   const client = useQueryClient();
-  const { data, isLoading, isError } = useQuery(["leads", pageId], getLeads, { staleTime: 30 * 1000 });
+  // paginado por cursor: "Carregar mais" busca os contatos mais antigos que o último da lista
+  const { data, isLoading, isError, hasNextPage, fetchNextPage, isFetchingNextPage } = useInfiniteQuery(
+    ["leads", pageId],
+    ({ pageParam }) => getLeads(pageParam),
+    { staleTime: 30 * 1000, getNextPageParam: (ultima) => ultima.nextCursor ?? undefined }
+  );
+  const contatos = data?.pages.flatMap((p) => p.leads) ?? [];
+  const total = data?.pages[0]?.total ?? 0;
 
   const remover = useMutation((id: string) => deleteLead(id), {
     onSuccess: () => client.invalidateQueries("leads"),
@@ -49,15 +56,15 @@ export default function Leads() {
         </div>
       ) : isError || !data ? (
         <p className="text-red-600 text-sm mt-6">Não foi possível carregar os contatos.</p>
-      ) : data.leads.length === 0 ? (
+      ) : contatos.length === 0 ? (
         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-10 text-center">Nenhum contato ainda.</p>
       ) : (
         <>
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mt-6 mb-2">
-            {data.total} {data.total === 1 ? "contato" : "contatos"}
+            {total} {total === 1 ? "contato" : "contatos"}
           </p>
           <ul className="flex flex-col divide-y divide-zinc-100 dark:divide-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl">
-            {data.leads.map((l) => (
+            {contatos.map((l) => (
               <li key={l.id} className="flex items-center gap-3 px-4 py-3">
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">{l.email}</p>
@@ -77,6 +84,16 @@ export default function Leads() {
               </li>
             ))}
           </ul>
+          {hasNextPage && (
+            <button
+              type="button"
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
+              className="mt-4 self-center h-9 px-4 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-60"
+            >
+              {isFetchingNextPage ? "Carregando..." : "Carregar mais"}
+            </button>
+          )}
         </>
       )}
     </div>

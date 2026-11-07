@@ -26,6 +26,20 @@ const AppState = observable({
   incrementBotao: action(function (this: any, item: string) {
     this.botao = item;
   }),
+  // "" = não mexeu (vale o salvo). Em fundoMidia, "remover" apaga o fundo salvo.
+  texto: "",
+  incrementTexto: action(function (this: any, item: string) {
+    this.texto = item;
+  }),
+  fundoMidia: "",
+  incrementFundoMidia: action(function (this: any, item: string) {
+    this.fundoMidia = item;
+  }),
+  // "" = não mexeu, "sim" = mostrar, "nao" = esconder
+  marca: "",
+  incrementMarca: action(function (this: any, item: string) {
+    this.marca = item;
+  }),
 });
 
 export default AppState;

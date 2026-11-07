@@ -122,6 +122,9 @@ function SimpleLink() {
       AppState.incrementcorFundo("");
       AppState.incrementFonte("");
       AppState.incrementBotao("");
+      AppState.incrementTexto("");
+      AppState.incrementFundoMidia("");
+      AppState.incrementMarca("");
     }
   }, [url]);
 
